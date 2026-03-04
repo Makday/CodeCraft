@@ -1,4 +1,4 @@
-package com.minecraftdsl;
+package src.main.java.com.minecraftdsl;
 
 public class Token {
     public final TokenType type;

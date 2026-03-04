@@ -1,4 +1,4 @@
-package com.minecraftdsl;
+package src.main.java.com.minecraftdsl;
 
 import java.util.Map;
 
