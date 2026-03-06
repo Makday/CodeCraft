@@ -93,6 +93,11 @@ public class Lexer {
                     TokenSpec spec = specForMatch(m);
 
                     if (spec == null) {
+                        // if the result is unexpected
+                        break;
+                    }
+
+                    if (spec.type == null) {
                         // comment -> swallow rest of line
                         break;
                     }
@@ -157,6 +162,7 @@ public class Lexer {
 
     public static void main(String[] args) {
         String src = """
+                -- User text something.
                 for i from 1 to 5
                 \tlog("hello")
                 while x > 0

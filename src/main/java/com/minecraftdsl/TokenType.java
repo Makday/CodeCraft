@@ -29,27 +29,27 @@ public enum TokenType {
     NEWLINE, INDENT, DEDENT
 }
 
-// IDENT # any variable/function name
-// NUMBER # any integer
-// STRING # anything between " "
+//IDENT        # any variable/function name
+//NUMBER       # any integer
+//STRING       # anything between " "
 //
-// PLUS # +
-// MINUS # -
-// STAR # *
-// SLASH # /
+//PLUS         # +
+//MINUS        # -
+//STAR         # *
+//SLASH        # /
 //
-// EQ # ==
-// NEQ # !=
-// LT #
-// GT # >
-// LTE # <=
-// GTE # >=
+//EQ           # ==
+//NEQ          # !=
+//LT           #
+//GT           # >
+//LTE          # <=
+//GTE          # >=
 //
-// ASSIGN # =
+//ASSIGN       # =
 //
-// EOF # End of the file
-// ILLEGAL # anything unrecognized
+//EOF          # End of the file
+//ILLEGAL      # anything unrecognized
 //
-// INDENT # Code is indented by one tab
-// DEDENT # Code is dedented by one tab
-// NEWLINE # A newline...
+//INDENT       # Code is indented by one tab
+//DEDENT       # Code is dedented by one tab
+//NEWLINE      # A newline...
