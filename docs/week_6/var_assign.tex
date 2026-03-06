@@ -1,0 +1,103 @@
+\section{Variable Asssignment}
+
+\begin{center}
+    \texttt{Full Derivation Tree}
+\end{center}
+
+\begin{center}
+\begin{forest}
+for tree={
+    font=\tiny,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=4mm,
+    s sep=1mm,
+    inner sep=1pt
+}
+[{$<$assignment$>$}
+    [{$<$identifier$>$}
+        [{$<$letter$>$}
+            [{$<$lower$>$}
+                [{"x"},tier=word]
+            ]
+        ]
+    ]
+    [{$<$optional\_space$>$}
+        [{$<$space$>$}
+            [{" "},tier=word]
+        ]
+    ]
+    [{"="}[{"="},tier=word]]
+    [{$<$optional\_space$>$}
+        [{$<$space$>$}
+            [{" "},tier=word]
+        ]
+    ]
+    [{$<$expression$>$}
+        [{$<$expression$>$}
+            [{$<$term$>$}
+                [{$<$term$>$}
+                    [{$<$factor$>$}
+                        [{$<$literal$>$}
+                            [{$<$number$>$}
+                                [{$<$digit$>$}
+                                    [{"4"},tier=word]
+                                ]
+                                [{$<$number$>$}
+                                    [{$<$digit$>$}
+                                        [{"5"},tier=word]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+                [{$<$optional\_space$>$}
+                    [{$<$space$>$}[{" "},tier=word]]
+                ]
+                [{"*"}[{"*"},tier=word]]
+                [{$<$optional\_space$>$}
+                    [{$<$space$>$}[{" "},tier=word]]
+                ]
+                [{$<$factor$>$}
+                    [{$<$literal$>$}
+                        [{$<$number$>$}
+                            [{$<$digit$>$}
+                                [{"3"},tier=word]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [{$<$optional\_space$>$}
+            [{$<$space$>$}[{" "},tier=word]]
+        ]
+        [{"+"}[{"+"},tier=word]]
+        [{$<$optional\_space$>$}
+            [{$<$space$>$}[{" "},tier=word]]
+        ]
+        [{$<$term$>$}
+            [{$<$factor$>$}
+                [{$<$literal$>$}
+                    [{$<$number$>$}
+                        [{$<$digit$>$}
+                            [{"2"},tier=word]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+]
+\end{forest}
+\end{center}
+
+\vspace{5mm}
+
+The derivation tree will produce the result: 
+\begin{lstlisting}
+x = 45 * 3 + 2
+\end{lstlisting}
+The tree shows that the operator precedence is handled correctly, along with the possibility to nest expressions.

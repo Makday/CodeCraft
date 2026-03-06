@@ -1,0 +1,117 @@
+\subsection{While Loop}
+
+\begin{center}
+    \texttt{Full Derivation Tree}
+\end{center}
+
+\noindent\makebox[\textwidth][c]{
+    \scalebox{0.9}{
+\begin{forest}
+for tree={
+    font=\tiny,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=4mm,
+    s sep=1mm,
+    inner sep=1pt
+}
+[{$<$while\_loop$>$}
+    [{"while"}
+        [{"while"},tier=word]
+    ]
+    [{$<$space$>$}
+        [{" "},tier=word]
+    ]
+    [{$<$condition$>$}
+        [{$<$expression$>$}
+            [{$<$term$>$}
+                [{$<$factor$>$}
+                    [{$<$identifier$>$}
+                        [{$<$letter$>$}
+                            [{$<$lower$>$}
+                                [{"x"},tier=word]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [{$<$optional\_space$>$}
+            [{$<$space$>$}
+                [{" "},tier=word]
+            ]
+        ]
+        [{$<$comparison\_op$>$}
+            [{$>$},tier=word]
+        ]
+        [{$<$optional\_space$>$}
+            [{$<$space$>$}
+                [{" "},tier=word]
+            ]
+        ]
+        [{$<$expression$>$}
+            [{$<$term$>$}
+                [{$<$factor$>$}
+                    [{$<$literal$>$}
+                        [{$<$number$>$}
+                            [{$<$digit$>$}
+                                [{"0"},tier=word]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    [{NEWLINE}[{"\textbackslash n"},tier=word]]
+    [{$<$block$>$}
+        [{INDENT}
+            [{"$\rightarrow$"},tier=word]
+        ]
+        [{$<$statement\_list$>$}
+            [{$<$statement$>$}
+                [{$<$assignment$>$}
+                    [{$<$identifier$>$}
+                        [{$<$letter$>$}
+                            [{$<$lower$>$}
+                                [{"y"},tier=word]
+                            ]
+                        ]
+                    ]
+                    [{$<$optional\_space$>$}[{" "},tier=word]]
+                    [{"="}[{"="},tier=word]]
+                    [{$<$optional\_space$>$}[{" "},tier=word]]
+                    [{$<$expression$>$}
+                        [{$<$term$>$}
+                            [{$<$factor$>$}
+                                [{$<$literal$>$}
+                                    [{$<$number$>$}
+                                        [{$<$digit$>$}
+                                            [{"1"},tier=word]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+                [{NEWLINE}[{"\textbackslash n"},tier=word]]
+            ]
+        ]
+        [{DEDENT}
+            [{"$\leftarrow$"},tier=word]
+        ]
+    ]
+]
+\end{forest}
+    }
+}
+
+\vspace{5mm}
+
+The derivation tree will produce the result:
+\begin{lstlisting}
+    while x > 0
+        y = 1
+\end{lstlisting}
