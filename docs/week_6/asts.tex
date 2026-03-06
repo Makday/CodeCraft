@@ -1,0 +1,107 @@
+\documentclass{article}
+\usepackage[margin=1cm]{geometry}
+\usepackage{forest}
+\begin{document}
+
+\begin{center}
+    {\Large Derivation trees of CodeCraft, a Domain-Specific Scripting Language for Minecraft}
+\end{center}
+
+\vspace{5mm}
+
+\section{Variable Asssignment}
+
+\begin{forest}
+for tree={
+    font=\tiny,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=4mm,
+    s sep=1mm,
+    inner sep=1pt
+}
+[
+    {$<$assignment$>$}
+    [{$<$identifier$>$}
+        [{$<$letter$>$}
+            [{$<$lower$>$}
+                [{"x"},tier=word]
+            ]
+        ]
+    ]
+    [{$<$optional\_space$>$}
+        [{$<$space$>$}
+            [{" "},tier=word]
+        ]
+    ]
+    [{"="}[{"="},tier=word]]
+    [{$<$optional\_space$>$}
+        [{$<$space$>$}
+            [{" "},tier=word]
+        ]
+    ]
+    [{$<$expression$>$}
+        [{$<$expression$>$}
+            [{$<$term$>$}
+                [{$<$term$>$}
+                    [{$<$factor$>$}
+                        [{$<$literal$>$}
+                            [{$<$number$>$}
+                                [{$<$digit$>$}
+                                    [{"4"},tier=word]
+                                ]
+                                [{$<$number$>$}
+                                    [{$<$digit$>$}
+                                        [{"5"},tier=word]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+                [{$<$optional\_space$>$}
+                    [{$<$space$>$}[{" "},tier=word]]
+                ]
+                [{"*"}[{"*"},tier=word]]
+                [{$<$optional\_space$>$}
+                    [{$<$space$>$}[{" "},tier=word]]
+                ]
+                [{$<$factor$>$}
+                    [{$<$literal$>$}
+                        [{$<$number$>$}
+                            [{$<$digit$>$}
+                                [{"3"},tier=word]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [{$<$optional\_space$>$}
+            [{$<$space$>$}[{" "},tier=word]]
+        ]
+        [{"+"}[{"+"},tier=word]]
+        [{$<$optional\_space$>$}
+            [{$<$space$>$}[{" "},tier=word]]
+        ]
+        [{$<$term$>$}
+            [{$<$factor$>$}
+                [{$<$literal$>$}
+                    [{$<$number$>$}
+                        [{$<$digit$>$}
+                            [{"2"},tier=word]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+]
+\end{forest}
+
+\vspace{5mm}
+
+The derivation tree will produce the result \texttt{x = 45 * 3 + 2}. The tree shows that the operator precedence is handled correctly, along with the possibility to nest expressions.
+
+\end{document}
