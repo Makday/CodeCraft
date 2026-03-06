@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage[margin=1cm]{geometry}
+\usepackage{listings}
 \usepackage{forest}
 \begin{document}
 
@@ -102,6 +103,99 @@ for tree={
 
 \vspace{5mm}
 
-The derivation tree will produce the result \texttt{x = 45 * 3 + 2}. The tree shows that the operator precedence is handled correctly, along with the possibility to nest expressions.
+The derivation tree will produce the result: 
+\begin{lstlisting}
+x = 45 * 3 + 2
+\end{lstlisting}
+The tree shows that the operator precedence is handled correctly, along with the possibility to nest expressions.
+
+\section{Control Structures}
+
+\subsection*{For Count}
+
+\begin{forest}
+for tree={
+    font=\tiny,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=4mm,
+    s sep=1mm,
+    inner sep=1pt
+}
+[{$<$for\_count$>$}
+    [{"for"}[{"for"},tier=word]]
+    [{$<$space$>$}
+        [{" "},tier=word]
+    ]
+    [{$<$expression$>$}
+        [{$<$term$>$}
+            [{$<$factor$>$}
+                [{$<$literal$>$}
+                    [{$<$number$>$}
+                        [{$<$digit$>$}
+                            [{"2"},tier=word]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    [{$<$space$>$}
+        [{" "},tier=word]
+    ]
+    [{"times"}[{"times"},tier=word]]
+    [{NEWLINE}
+        [{"\textbackslash n"},tier=word]
+    ]
+    [{$<$block$>$}
+        [{INDENT}
+            [{"$\rightarrow$"},tier=word]
+        ]
+        [{$<$statement\_list$>$}
+            [{$<$statement$>$}
+                [{$<$assignment$>$}
+                    [{$<$identifier$>$}
+                        [{$<$letter$>$}
+                            [{$<$lower$>$}
+                                [{"x"},tier=word]
+                            ]
+                        ]
+                    ]
+                    [{$<$optional\_space$>$}[{" "},tier=word]]
+                    [{"="}[{"="},tier=word]]
+                    [{$<$optional\_space$>$}[{" "},tier=word]]
+                    [{$<$expression$>$}
+                        [{$<$term$>$}
+                            [{$<$factor$>$}
+                                [{$<$literal$>$}
+                                    [{$<$number$>$}
+                                        [{$<$digit$>$}
+                                            [{"1"},tier=word]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+                [{NEWLINE}[{"\textbackslash n"},tier=word]]
+            ]
+        ]
+        [{DEDENT}
+            [{"$\leftarrow$"},tier=word]
+        ]
+    ]
+]
+\end{forest}
+
+\vspace{5mm}
+
+The derivation tree will produce the result:
+\begin{lstlisting}
+    for 2 times
+        x = 1
+\end{lstlisting}
+The tree illustrates that the block scopes are handled through forced indentations and dedentations, a practice similar to \emph{Python}.
 
 \end{document}
