@@ -1,4 +1,4 @@
-package src.main.java.com.minecraftdsl;
+package com.minecraftdsl;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -125,7 +125,7 @@ public class Lexer {
             tokens.add(new Token(TokenType.NEWLINE));
         }
 
-        while (!indentStack.isEmpty()) {
+        while (indentStack.size() > 1) {
             indentStack.pop();
             tokens.add(new Token(TokenType.DEDENT));
         }
@@ -157,12 +157,6 @@ public class Lexer {
 
     public static void main(String[] args) {
         String src = """
-                -- this is a comment
-                x = 10
-                y = x + 5
-                if x == 10
-                \tprint(x, y)
-                \tstop
                 for i from 1 to 5
                 \tlog("hello")
                 while x > 0
