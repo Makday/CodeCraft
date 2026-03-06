@@ -1,7 +1,7 @@
 \subsection{For Count}
 
 \begin{center}
-    \texttt{Full Derivation Tree}
+    \texttt{Derivation Tree}
 \end{center}
 
 \begin{center}
@@ -77,6 +77,47 @@ for tree={
         [{DEDENT}
             [{"$\leftarrow$"},tier=word]
         ]
+    ]
+]
+\end{forest}
+\end{center}
+
+\vspace{5mm}
+
+\begin{center}
+    \texttt{Simplified Abstract Syntax Tree}
+\end{center}
+
+\begin{center}
+\begin{forest}
+for tree={
+    font=\small,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=6mm,
+    s sep=4mm,
+    inner sep=2pt
+}
+[{$<$for\_count$>$}
+    [{"for"}[{"for"},tier=word]]
+    [{$<$expression$>$}
+        [{$<$number$>$}[{"2"},tier=word]]
+    ]
+    [{"times"}[{"times"},tier=word]]
+    [{NEWLINE}
+        [{"\textbackslash n"},tier=word]
+    ]
+    [{$<$block$>$}
+        [{INDENT}[{$\rightarrow$},tier=word]]
+        [{$<$assignment$>$}
+            [{$<$identifier$>$}[{"x"},tier=word]]
+            [{"="}[{"="},tier=word]]
+            [{$<$expression$>$}
+                [{$<$number$>$}[{"1"},tier=word]]
+            ]
+        ]
+        [{DEDENT}[{$\leftarrow$},tier=word]]
     ]
 ]
 \end{forest}

@@ -1,7 +1,7 @@
 \subsection{While Loop}
 
 \begin{center}
-    \texttt{Full Derivation Tree}
+    \texttt{Derivation Tree}
 \end{center}
 
 \noindent\makebox[\textwidth][c]{
@@ -43,7 +43,7 @@ for tree={
             ]
         ]
         [{$<$comparison\_op$>$}
-            [{$>$},tier=word]
+            [{"$>$"},tier=word]
         ]
         [{$<$optional\_space$>$}
             [{$<$space$>$}
@@ -107,6 +107,50 @@ for tree={
 \end{forest}
     }
 }
+
+\vspace{5mm}
+
+\begin{center}
+    \texttt{Simplified Abstract Syntax Tree}
+\end{center}
+
+\begin{center}
+\begin{forest}
+for tree={
+    font=\small,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=6mm,
+    s sep=4mm,
+    inner sep=2pt
+}
+[{$<$while\_loop$>$}
+    [{"while"}[{"while"},tier=word]]
+    [{$<$condition$>$}
+        [{$<$expression$>$}
+            [{$<$identifier$>$}[{"x"},tier=word]]
+        ]
+        [{$<$comparison\_op$>$}[{"$>$"},tier=word]]
+        [{$<$expression$>$}
+            [{$<$number$>$}[{"0"},tier=word]]
+        ]
+    ]
+    [{NEWLINE}[{"\textbackslash n"},tier=word]]
+    [{$<$block$>$}
+        [{INDENT}[{$\rightarrow$},tier=word]]
+        [{$<$assignment$>$}
+            [{$<$identifier$>$}[{"y"},tier=word]]
+            [{"="}[{"="},tier=word]]
+            [{$<$expression$>$}
+                [{$<$number$>$}[{"1"},tier=word]]
+            ]
+        ]
+        [{DEDENT}[{$\leftarrow$},tier=word]]
+    ]
+]
+\end{forest}
+\end{center}
 
 \vspace{5mm}
 

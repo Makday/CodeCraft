@@ -1,7 +1,7 @@
 \section{Variable Asssignment}
 
 \begin{center}
-    \texttt{Full Derivation Tree}
+    \texttt{Derivation Tree}
 \end{center}
 
 \begin{center}
@@ -88,6 +88,49 @@ for tree={
                     ]
                 ]
             ]
+        ]
+    ]
+]
+\end{forest}
+\end{center}
+
+\vspace{5mm}
+
+\begin{center}
+    \texttt{Simplified Abstract Syntax Tree}
+\end{center}
+
+\begin{center}
+\begin{forest}
+for tree={
+    font=\small,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=6mm,
+    s sep=4mm,
+    inner sep=2pt
+}
+[{$<$assignment$>$}
+    [{$<$identifier$>$}[{"x"},tier=word]]
+    [{"="}[{"="},tier=word]]
+    [{$<$expression$>$}
+        [{$<$expression$>$}
+            [{$<$term$>$}
+                [{$<$term$>$}
+                    [{$<$number$>$}
+                        [{"45"},tier=word]
+                    ]
+                ]
+                [{"*"},tier=word]
+                [{$<$factor$>$}
+                    [{"3"},tier=word]
+                ]
+            ]
+        ]
+        [{"+"}[{"+"},tier=word]]
+        [{$<$term$>$}
+            [{"2"},tier=word]
         ]
     ]
 ]
