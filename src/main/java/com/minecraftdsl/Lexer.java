@@ -159,19 +159,4 @@ public class Lexer {
             this.pattern = pattern;
         }
     }
-
-    public static void main(String[] args) {
-        String src = """
-                -- User text something.
-                for i from 1 to 5
-                \tlog("hello")
-                while x > 0
-                \tx = x - 1
-                done = true
-                """;
-
-        Lexer lexer = new Lexer(src);
-        for (Token t : lexer.tokenize())
-            System.out.println(t);
-    }
 }
