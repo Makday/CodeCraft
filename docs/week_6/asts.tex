@@ -23,8 +23,7 @@ for tree={
     s sep=1mm,
     inner sep=1pt
 }
-[
-    {$<$assignment$>$}
+[{$<$assignment$>$}
     [{$<$identifier$>$}
         [{$<$letter$>$}
             [{$<$lower$>$}
@@ -204,35 +203,88 @@ The tree illustrates that the block scopes are handled through forced indentatio
 \noindent\makebox[\textwidth][c]{
     \scalebox{0.9}{
 \begin{forest}
-    for tree={
-        font=\tiny,
-        grow=south,
-        parent anchor=south,
-        child anchor=north,
-        l sep=4mm,
-        s sep=1mm,
-        inner sep=1pt
-    }
-    [{$<$for\_count$>$}
-        [{"for"}[{"for"},tier=word]]
-        [{$<$space$>$}
-            [{" "},tier=word]
-        ]
-        [{$<$identifier$>$}
-            [{$<$letter$>$}
-                [{$<$lower$>$}
-                    [{"x"},tier=word]
-                ]
+for tree={
+    font=\tiny,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=4mm,
+    s sep=1mm,
+    inner sep=1pt
+}
+[{$<$for\_count$>$}
+    [{"for"}[{"for"},tier=word]]
+    [{$<$space$>$}
+        [{" "},tier=word]
+    ]
+    [{$<$identifier$>$}
+        [{$<$letter$>$}
+            [{$<$lower$>$}
+                [{"x"},tier=word]
             ]
         ]
-        [{$<$space$>$}
-            [{" "},tier=word]
+    ]
+    [{$<$space$>$}
+        [{" "},tier=word]
+    ]
+    [{"from"}[{"from"},tier=word]]
+    [{$<$space$>$}
+        [{" "},tier=word]
+    ]
+    [{$<$expression$>$}
+                    [{$<$term$>$}
+                        [{$<$factor$>$}
+                            [{$<$literal$>$}
+                                [{$<$number$>$}
+                                    [{$<$digit$>$}
+                                        [{"1"},tier=word]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+    [{$<$space$>$}
+        [{" "},tier=word]
+    ]
+    [{"to"}[{"to"},tier=word]]
+    [{$<$space$>$}
+        [{" "},tier=word]
+    ]
+    [{$<$expression$>$}
+                    [{$<$term$>$}
+                        [{$<$factor$>$}
+                            [{$<$literal$>$}
+                                [{$<$number$>$}
+                                    [{$<$digit$>$}
+                                        [{"9"},tier=word]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+    [{NEWLINE}
+        [{"\textbackslash n"},tier=word]
+    ]
+    [{$<$block$>$}
+        [{INDENT}
+            [{"$\rightarrow$"},tier=word]
         ]
-        [{"from"}[{"from"},tier=word]]
-        [{$<$space$>$}
-            [{" "},tier=word]
-        ]
-        [{$<$expression$>$}
+        [{$<$statement\_list$>$}
+            [{$<$statement$>$}
+                [{$<$assignment$>$}
+                    [{$<$identifier$>$}
+                        [{$<$letter$>$}
+                            [{$<$lower$>$}
+                                [{"y"},tier=word]
+                            ]
+                        ]
+                    ]
+                    [{$<$optional\_space$>$}[{" "},tier=word]]
+                    [{"="}[{"="},tier=word]]
+                    [{$<$optional\_space$>$}[{" "},tier=word]]
+                    [{$<$expression$>$}
                         [{$<$term$>$}
                             [{$<$factor$>$}
                                 [{$<$literal$>$}
@@ -245,68 +297,15 @@ The tree illustrates that the block scopes are handled through forced indentatio
                             ]
                         ]
                     ]
-        [{$<$space$>$}
-            [{" "},tier=word]
-        ]
-        [{"to"}[{"to"},tier=word]]
-        [{$<$space$>$}
-            [{" "},tier=word]
-        ]
-        [{$<$expression$>$}
-                        [{$<$term$>$}
-                            [{$<$factor$>$}
-                                [{$<$literal$>$}
-                                    [{$<$number$>$}
-                                        [{$<$digit$>$}
-                                            [{"9"},tier=word]
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-        [{NEWLINE}
-            [{"\textbackslash n"},tier=word]
-        ]
-        [{$<$block$>$}
-            [{INDENT}
-                [{"$\rightarrow$"},tier=word]
-            ]
-            [{$<$statement\_list$>$}
-                [{$<$statement$>$}
-                    [{$<$assignment$>$}
-                        [{$<$identifier$>$}
-                            [{$<$letter$>$}
-                                [{$<$lower$>$}
-                                    [{"y"},tier=word]
-                                ]
-                            ]
-                        ]
-                        [{$<$optional\_space$>$}[{" "},tier=word]]
-                        [{"="}[{"="},tier=word]]
-                        [{$<$optional\_space$>$}[{" "},tier=word]]
-                        [{$<$expression$>$}
-                            [{$<$term$>$}
-                                [{$<$factor$>$}
-                                    [{$<$literal$>$}
-                                        [{$<$number$>$}
-                                            [{$<$digit$>$}
-                                                [{"1"},tier=word]
-                                            ]
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                    [{NEWLINE}[{"\textbackslash n"},tier=word]]
                 ]
+                [{NEWLINE}[{"\textbackslash n"},tier=word]]
             ]
-            [{DEDENT}
-                [{"$\leftarrow$"},tier=word]
-            ]
+        ]
+        [{DEDENT}
+            [{"$\leftarrow$"},tier=word]
         ]
     ]
+]
 \end{forest}
     }
 }
@@ -335,94 +334,94 @@ for tree={
     s sep=1mm,
     inner sep=1pt
 }
-    [{$<$while\_loop$>$}
-        [{"while"}
-            [{"while"},tier=word]
-        ]
-        [{$<$space$>$}
-            [{" "},tier=word]
-        ]
-        [{$<$condition$>$}
-            [{$<$expression$>$}
-                [{$<$term$>$}
-                    [{$<$factor$>$}
-                        [{$<$identifier$>$}
-                            [{$<$letter$>$}
-                                [{$<$lower$>$}
-                                    [{"x"},tier=word]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-            [{$<$optional\_space$>$}
-                [{$<$space$>$}
-                    [{" "},tier=word]
-                ]
-            ]
-            [{$<$comparison\_op$>$}
-                [{$>$},tier=word]
-            ]
-            [{$<$optional\_space$>$}
-                [{$<$space$>$}
-                    [{" "},tier=word]
-                ]
-            ]
-            [{$<$expression$>$}
-                [{$<$term$>$}
-                    [{$<$factor$>$}
-                        [{$<$literal$>$}
-                            [{$<$number$>$}
-                                [{$<$digit$>$}
-                                    [{"0"},tier=word]
-                                ]
+[{$<$while\_loop$>$}
+    [{"while"}
+        [{"while"},tier=word]
+    ]
+    [{$<$space$>$}
+        [{" "},tier=word]
+    ]
+    [{$<$condition$>$}
+        [{$<$expression$>$}
+            [{$<$term$>$}
+                [{$<$factor$>$}
+                    [{$<$identifier$>$}
+                        [{$<$letter$>$}
+                            [{$<$lower$>$}
+                                [{"x"},tier=word]
                             ]
                         ]
                     ]
                 ]
             ]
         ]
-        [{NEWLINE}[{"\textbackslash n"},tier=word]]
-        [{$<$block$>$}
-            [{INDENT}
-                [{"$\rightarrow$"},tier=word]
+        [{$<$optional\_space$>$}
+            [{$<$space$>$}
+                [{" "},tier=word]
             ]
-            [{$<$statement\_list$>$}
-                [{$<$statement$>$}
-                    [{$<$assignment$>$}
-                        [{$<$identifier$>$}
-                            [{$<$letter$>$}
-                                [{$<$lower$>$}
-                                    [{"y"},tier=word]
-                                ]
+        ]
+        [{$<$comparison\_op$>$}
+            [{$>$},tier=word]
+        ]
+        [{$<$optional\_space$>$}
+            [{$<$space$>$}
+                [{" "},tier=word]
+            ]
+        ]
+        [{$<$expression$>$}
+            [{$<$term$>$}
+                [{$<$factor$>$}
+                    [{$<$literal$>$}
+                        [{$<$number$>$}
+                            [{$<$digit$>$}
+                                [{"0"},tier=word]
                             ]
                         ]
-                        [{$<$optional\_space$>$}[{" "},tier=word]]
-                        [{"="}[{"="},tier=word]]
-                        [{$<$optional\_space$>$}[{" "},tier=word]]
-                        [{$<$expression$>$}
-                            [{$<$term$>$}
-                                [{$<$factor$>$}
-                                    [{$<$literal$>$}
-                                        [{$<$number$>$}
-                                            [{$<$digit$>$}
-                                                [{"1"},tier=word]
-                                            ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    [{NEWLINE}[{"\textbackslash n"},tier=word]]
+    [{$<$block$>$}
+        [{INDENT}
+            [{"$\rightarrow$"},tier=word]
+        ]
+        [{$<$statement\_list$>$}
+            [{$<$statement$>$}
+                [{$<$assignment$>$}
+                    [{$<$identifier$>$}
+                        [{$<$letter$>$}
+                            [{$<$lower$>$}
+                                [{"y"},tier=word]
+                            ]
+                        ]
+                    ]
+                    [{$<$optional\_space$>$}[{" "},tier=word]]
+                    [{"="}[{"="},tier=word]]
+                    [{$<$optional\_space$>$}[{" "},tier=word]]
+                    [{$<$expression$>$}
+                        [{$<$term$>$}
+                            [{$<$factor$>$}
+                                [{$<$literal$>$}
+                                    [{$<$number$>$}
+                                        [{$<$digit$>$}
+                                            [{"1"},tier=word]
                                         ]
                                     ]
                                 ]
                             ]
                         ]
                     ]
-                    [{NEWLINE}[{"\textbackslash n"},tier=word]]
                 ]
-            ]
-            [{DEDENT}
-                [{"$\leftarrow$"},tier=word]
+                [{NEWLINE}[{"\textbackslash n"},tier=word]]
             ]
         ]
+        [{DEDENT}
+            [{"$\leftarrow$"},tier=word]
+        ]
     ]
+]
 \end{forest}
     }
 }
@@ -433,6 +432,176 @@ The derivation tree will produce the result:
 \begin{lstlisting}
     while x > 0
         y = 1
+\end{lstlisting}
+
+\subsection{If-Else Statement}
+
+\noindent\makebox[\textwidth][c]{
+    \scalebox{0.65}{
+\begin{forest}
+for tree={
+    font=\tiny,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=4mm,
+    s sep=1mm,
+    inner sep=1pt
+}
+[{$<$if\_stmt$>$}
+    [{"if"}[{"if"},tier=word]]
+    [{$<$space$>$}
+        [{" "},tier=word]
+    ]
+    [{$<$condition$>$}
+        [{$<$expression$>$}
+            [{$<$term$>$}
+                [{$<$factor$>$}
+                    [{$<$identifier$>$}
+                        [{$<$letter$>$}
+                            [{$<$lower$>$}
+                                [{"x"},tier=word]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        [{$<$optional\_space$>$}
+            [{$<$space$>$}
+                [{" "},tier=word]
+            ]
+        ]
+        [{$<$comparison\_op$>$}
+            [{$==$},tier=word]
+        ]
+        [{$<$optional\_space$>$}
+            [{$<$space$>$}
+                [{" "},tier=word]
+            ]
+        ]
+        [{$<$expression$>$}
+            [{$<$term$>$}
+                [{$<$factor$>$}
+                    [{$<$literal$>$}
+                        [{$<$number$>$}
+                            [{$<$digit$>$}
+                                [{"0"},tier=word]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    [{NEWLINE}[{"\textbackslash n"},tier=word]]
+    [{$<$block$>$}
+        [{INDENT}
+            [{$\rightarrow$},tier=word]
+        ]
+        [{$<$statement\_list$>$}
+            [{$<$statement$>$}
+                [{$<$assignment$>$}
+                    [{$<$identifier$>$}
+                        [{$<$letter$>$}
+                            [{$<$lower$>$}
+                                [{"y"},tier=word]
+                            ]
+                        ]
+                    ]
+                    [{$<$optional\_space$>$}
+                        [{$<$space$>$}
+                            [{" "},tier=word]
+                        ]
+                    ]
+                    [{"="}[{"="},tier=word]]
+                    [{$<$optional\_space$>$}
+                        [{$<$space$>$}
+                            [{" "},tier=word]
+                        ]
+                    ]
+                    [{$<$expression$>$}
+                        [{$<$term$>$}
+                            [{$<$factor$>$}
+                                [{$<$literal$>$}
+                                    [{$<$number$>$}
+                                        [{$<$digit$>$}
+                                            [{"1"},tier=word]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+                [{NEWLINE}[{"\textbackslash n"},tier=word]]
+            ]
+        ]
+        [{DEDENT}
+            [{$\leftarrow$},tier=word]
+        ]
+    ]
+    [{"else"}[{"else"},tier=word]]
+    [{NEWLINE}[{"\textbackslash n"},tier=word]]
+    [{$<$block$>$}
+        [{INDENT}
+            [{$\rightarrow$},tier=word]
+        ]
+        [{$<$statement\_list$>$}
+            [{$<$statement$>$}
+                [{$<$assignment$>$}
+                    [{$<$identifier$>$}
+                        [{$<$letter$>$}
+                            [{$<$lower$>$}
+                                [{"z"},tier=word]
+                            ]
+                        ]
+                    ]
+                    [{$<$optional\_space$>$}
+                        [{$<$space$>$}
+                            [{" "},tier=word]
+                        ]
+                    ]
+                    [{"="}[{"="},tier=word]]
+                    [{$<$optional\_space$>$}
+                        [{$<$space$>$}
+                            [{" "},tier=word]
+                        ]
+                    ]
+                    [{$<$expression$>$}
+                        [{$<$term$>$}
+                            [{$<$factor$>$}
+                                [{$<$literal$>$}
+                                    [{$<$number$>$}
+                                        [{$<$digit$>$}
+                                            [{"2"},tier=word]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+                [{NEWLINE}[{"\textbackslash n"},tier=word]]
+            ]
+        ]
+        [{DEDENT}
+            [{$\leftarrow$},tier=word]
+        ]
+    ]
+]
+\end{forest}
+    }
+}
+
+\vspace{5mm}
+
+The derivation tree will produce the result:
+\begin{lstlisting}
+    if x == 0
+        y = 1
+    else
+        z = 2
 \end{lstlisting}
 
 \end{document}
