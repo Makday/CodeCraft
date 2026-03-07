@@ -342,7 +342,7 @@ public class Parser {
 
         // Numeric literal
         if (check(TokenType.NUMBER)) {
-            double val = Double.parseDouble(current.literal);
+            int val = Integer.parseInt(current.literal);
             advance();
             return new ASTNode.NumberLiteral(val);
         }
