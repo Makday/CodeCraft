@@ -10,7 +10,6 @@ public abstract class ASTNode {
         return toTree("");
     }
 
-    // Root node that holds a list of top-level statements
     public static class Program extends ASTNode {
         public final List<ASTNode> statements;
         public Program(List<ASTNode> statements) { this.statements = statements; }
@@ -22,7 +21,6 @@ public abstract class ASTNode {
         }
     }
 
-    // Holding an ordered list of statements
     public static class Block extends ASTNode {
         public final List<ASTNode> statements;
         public Block(List<ASTNode> statements) { this.statements = statements; }
@@ -34,6 +32,7 @@ public abstract class ASTNode {
         }
     }
 
+    // variable = expression
     public static class Assignment extends ASTNode {
         public final String name;
         public final ASTNode value;
@@ -77,9 +76,9 @@ public abstract class ASTNode {
 
     // while <condition> { block }
     public static class WhileLoop extends ASTNode {
-        public final ASTNode condition;
+        public final Condition condition;
         public final Block body;
-        public WhileLoop(ASTNode condition, Block body) { this.condition = condition; this.body = body; }
+        public WhileLoop(Condition condition, Block body) { this.condition = condition; this.body = body; }
 
         @Override public String toTree(String indent) {
             return indent + "While\n"
@@ -87,12 +86,13 @@ public abstract class ASTNode {
                     + body.toTree(indent + "  ");
         }
     }
+
     // if <condition> { block } [ else { block } ]
     public static class IfStmt extends ASTNode {
-        public final ASTNode condition;
+        public final Condition condition;
         public final Block thenBlock;
         public final Block elseBlock; // may be null
-        public IfStmt(ASTNode condition, Block thenBlock, Block elseBlock) {
+        public IfStmt(Condition condition, Block thenBlock, Block elseBlock) {
             this.condition = condition; this.thenBlock = thenBlock; this.elseBlock = elseBlock;
         }
 
@@ -105,18 +105,57 @@ public abstract class ASTNode {
         }
     }
 
-    // stop
+    // Abstract base for all condition nodes.
+    // using a dedicated type means callers never need to cast — if you have a
+    // {@code Condition} you know it came from {@code parseCondition()}.
+    public static abstract class Condition extends ASTNode {}
+
+    public static class ComparisonCondition extends Condition {
+        public final String op;
+        public final ASTNode left;
+        public final ASTNode right;
+        public ComparisonCondition(String op, ASTNode left, ASTNode right) {
+            this.op = op; this.left = left; this.right = right;
+        }
+
+        @Override public String toTree(String indent) {
+            return indent + "Comparison(" + op + ")\n"
+                    + left.toTree(indent + "  ") + "\n"
+                    + right.toTree(indent + "  ");
+        }
+    }
+
+    // not <condition>
+    public static class NotCondition extends Condition {
+        public final Condition operand;
+        public NotCondition(Condition operand) { this.operand = operand; }
+
+        @Override public String toTree(String indent) {
+            return indent + "Not\n" + operand.toTree(indent + "  ");
+        }
+    }
+
+    public static class BooleanCondition extends Condition {
+        public final ASTNode expr;
+        public BooleanCondition(ASTNode expr) { this.expr = expr; }
+
+        @Override public String toTree(String indent) {
+            return indent + "BoolCondition\n" + expr.toTree(indent + "  ");
+        }
+    }
+
     public static class StopStmt extends ASTNode {
         @Override public String toTree(String indent) { return indent + "Stop"; }
     }
 
-    // comment text
     public static class Comment extends ASTNode {
         public final String text;
         public Comment(String text) { this.text = text; }
 
         @Override public String toTree(String indent) { return indent + "Comment(" + text.trim() + ")"; }
     }
+
+    // Expressions
 
     public static class Identifier extends ASTNode {
         public final String name;
@@ -125,7 +164,6 @@ public abstract class ASTNode {
         @Override public String toTree(String indent) { return indent + "Ident(" + name + ")"; }
     }
 
-    // object.field that special object access
     public static class SpecialObject extends ASTNode {
         public final String object;
         public final String field;
@@ -181,17 +219,6 @@ public abstract class ASTNode {
 
         @Override public String toTree(String indent) {
             return indent + "UnaryMinus\n" + operand.toTree(indent + "  ");
-        }
-    }
-
-    // not <condition>
-    public static class NotExpr extends ASTNode {
-        public final ASTNode operand;
-        public NotExpr(ASTNode operand) { this.operand = operand; }
-
-
-        @Override public String toTree(String indent) {
-            return indent + "Not\n" + operand.toTree(indent + "  ");
         }
     }
 
