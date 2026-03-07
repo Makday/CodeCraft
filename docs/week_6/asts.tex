@@ -1,0 +1,23 @@
+\documentclass{article}
+\usepackage[margin=1cm]{geometry}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{forest}
+\begin{document}
+
+\begin{center}
+    {\Large \textbf{Derivation trees of CodeCraft, a Domain-Specific Scripting Language for Minecraft}}
+\end{center}
+
+\vspace{5mm}
+
+\input{sections/var_assign}
+\newpage
+
+\section{Control Structures}
+\input{sections/for_count.tex}
+\include{sections/for_range.tex}
+\include{sections/while_loop.tex}
+\include{sections/if_stmt.tex}
+
+\end{document}

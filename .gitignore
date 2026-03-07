@@ -39,3 +39,10 @@ build/
 .DS_Store
 
 .idea
+
+### LaTeX ###
+
+*.aux
+*.log
+*.synctex.gz
+
