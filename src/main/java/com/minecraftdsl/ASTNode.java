@@ -173,11 +173,10 @@ public abstract class ASTNode {
     }
 
     public static class NumberLiteral extends ASTNode {
-        public final double value;
-        public NumberLiteral(double value) { this.value = value; }
+        public final int value;
+        public NumberLiteral(int value) { this.value = value; }
 
         @Override public String toTree(String indent) {
-            if (value == Math.floor(value)) return indent + "Number(" + (long) value + ")";
             return indent + "Number(" + value + ")";
         }
     }
