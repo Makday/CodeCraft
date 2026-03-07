@@ -14,12 +14,12 @@ import java.util.List;
  *   <factor>        ::= <literal> | <identifier> | <special_object>
  *                     | <function_call> | "(" <expression> ")" | "-" <factor>
  *   <condition>     ::= "not" <condition>
- *                     | <expression> [<comparison_op> <expression>]
- *
+ *                     | <expression> <comparison_op> <expression>
+ *                     | <function_call>
+ *                     | <identifier>
  */
 
 public class Parser {
-
 
     // State
     private final List<Token> tokens;
@@ -30,7 +30,6 @@ public class Parser {
         this.tokens = tokens;
         advance(); // prime the pump
     }
-
 
     // Token navigation helpers
     // Move to the next token and return it.
@@ -59,8 +58,8 @@ public class Parser {
     private Token expect(TokenType type) {
         if (!check(type)) {
             throw new ParseException(
-                "Expected " + type + " but got " + current.type
-                + (current.literal != null ? " ('" + current.literal + "')" : ""));
+                    "Expected " + type + " but got " + current.type
+                            + (current.literal != null ? " ('" + current.literal + "')" : ""));
         }
         Token t = current;
         advance();
@@ -81,7 +80,7 @@ public class Parser {
     }
 
     // Statement list
-    // Parse a sequence of statements if true, stop when DEDENT (or EOF) is seen.
+    // Parse a sequence of statements; if insideBlock=true, stop when DEDENT (or EOF) is seen.
     private List<ASTNode> parseStatementList(boolean insideBlock) {
         List<ASTNode> stmts = new ArrayList<>();
         while (true) {
@@ -95,9 +94,6 @@ public class Parser {
     }
 
     /**
-     * Parse exactly one statement.
-     *
-     * <pre>
      * <statement> ::= <assignment> NEWLINE
      *               | <for_count>
      *               | <for_range>
@@ -106,9 +102,7 @@ public class Parser {
      *               | "stop" NEWLINE
      *               | <function_call> NEWLINE
      *               | <comment>
-     * </pre>
      */
-
     private ASTNode parseStatement() {
         // Comment  -->  "-- ..." until end of line
         if (check(TokenType.IDENT) && current.literal != null && current.literal.startsWith("--")) {
@@ -135,11 +129,11 @@ public class Parser {
                 if (la.type == TokenType.ASSIGN) {
                     return parseAssignment();
                 } else {
-                    // expression statement
+                    // expression statement - must be a function call per grammar
                     ASTNode expr = parseExpression();
                     if (!(expr instanceof ASTNode.FunctionCall)) {
                         throw new ParseException(
-                            "Expected a function call or assignment as statement, got: " + expr);
+                                "Expected a function call or assignment as statement, got: " + expr);
                     }
                     consumeNewline();
                     return expr;
@@ -152,7 +146,6 @@ public class Parser {
         }
     }
 
-
     // Comments are lexed as a single IDENT token whose literal begins with "--".
     private ASTNode.Comment parseComment() {
         String text = current.literal;
@@ -161,11 +154,8 @@ public class Parser {
         return new ASTNode.Comment(text.substring(2));
     }
 
-    // Assignment
     /**
-     * <pre>
      * <assignment> ::= IDENT "=" <expression>
-     * </pre>
      */
     private ASTNode.Assignment parseAssignment() {
         String name = expect(TokenType.IDENT).literal;
@@ -175,18 +165,13 @@ public class Parser {
         return new ASTNode.Assignment(name, value);
     }
 
-
-    // For loops
     /**
-     * <pre>
      * <for_count> ::= "for" <expression> "times" NEWLINE <block>
      * <for_range> ::= "for" IDENT "from" <expression> "to" <expression> NEWLINE <block>
-     * </pre>
      */
     private ASTNode parseFor() {
         expect(TokenType.FOR);
-
-        // Is this a for-range? "for" IDENT "from" …
+        // Disambiguate: "for" IDENT "from" -> range, anything else -> count
         if (check(TokenType.IDENT) && peek(1).type == TokenType.FROM) {
             return parseForRange();
         }
@@ -212,32 +197,24 @@ public class Parser {
         return new ASTNode.ForRange(variable, from, to, body);
     }
 
-
-    // While loop
     /**
-     * <pre>
      * <while_loop> ::= "while" <condition> NEWLINE <block>
-     * </pre>
      */
     private ASTNode.WhileLoop parseWhile() {
         expect(TokenType.WHILE);
-        ASTNode condition = parseCondition();
+        ASTNode.Condition condition = parseCondition();
         consumeNewline();
         ASTNode.Block body = parseBlock();
         return new ASTNode.WhileLoop(condition, body);
     }
 
-
-    // If statement
     /**
-     * <pre>
      * <if_stmt> ::= "if" <condition> NEWLINE <block>
      *             | "if" <condition> NEWLINE <block> "else" NEWLINE <block>
-     * </pre>
      */
     private ASTNode.IfStmt parseIf() {
         expect(TokenType.IF);
-        ASTNode condition = parseCondition();
+        ASTNode.Condition condition = parseCondition();
         consumeNewline();
         ASTNode.Block thenBlock = parseBlock();
 
@@ -251,12 +228,8 @@ public class Parser {
         return new ASTNode.IfStmt(condition, thenBlock, elseBlock);
     }
 
-
-    // Block
     /**
-     * <pre>
      * <block> ::= INDENT <statement_list> DEDENT
-     * </pre>
      */
     private ASTNode.Block parseBlock() {
         expect(TokenType.INDENT);
@@ -265,35 +238,35 @@ public class Parser {
         return new ASTNode.Block(stmts);
     }
 
-
-    // Condition
     /**
-     * <pre>
-     * <condition> ::= "not" <condition>
-     *               | <expression> [<comparison_op> <expression>]
-     *               | <function_call>
-     *               | <identifier>
-     * </pre>
+     * <condition> ::= "not" <condition>                        -> NotCondition
+     *               | <expression> <comparison_op> <expression> -> ComparisonCondition
+     *               | <function_call>                          -> BooleanCondition
+     *               | <identifier>                             -> BooleanCondition
+     *
+     * Always returns a concrete ASTNode.Condition — no casting needed by callers.
      */
-    private ASTNode parseCondition() {
-        // "not" <condition>
+    private ASTNode.Condition parseCondition() {
+        // "not" <condition>  ->  NotCondition
         if (check(TokenType.NOT)) {
             advance();
-            ASTNode operand = parseCondition();
-            return new ASTNode.NotExpr(operand);
+            ASTNode.Condition operand = parseCondition();
+            return new ASTNode.NotCondition(operand);
         }
 
+        // Parse left-hand expression first
         ASTNode left = parseExpression();
 
-        // optional comparison operator
+        // expr <comparison_op> expr  ->  ComparisonCondition
         if (isComparisonOp(current.type)) {
             String op = comparisonOpString(current.type);
             advance();
             ASTNode right = parseExpression();
-            return new ASTNode.BinaryOp(op, left, right);
+            return new ASTNode.ComparisonCondition(op, left, right);
         }
 
-        return left;
+        // bare identifier or function call used as boolean  ->  BooleanCondition
+        return new ASTNode.BooleanCondition(left);
     }
 
     private boolean isComparisonOp(TokenType t) {
@@ -315,11 +288,8 @@ public class Parser {
         }
     }
 
-    // Expression  (left-recursive addition/subtraction)
     /**
-     * <pre>
      * <expression> ::= <term> (("+"|"-") <term>)*
-     * </pre>
      */
     private ASTNode parseExpression() {
         ASTNode left = parseTerm();
@@ -332,11 +302,8 @@ public class Parser {
         return left;
     }
 
-    // Term
     /**
-     * <pre>
      * <term> ::= <factor> (("*"|"/") <factor>)*
-     * </pre>
      */
     private ASTNode parseTerm() {
         ASTNode left = parseFactor();
@@ -349,16 +316,13 @@ public class Parser {
         return left;
     }
 
-    // Factor
     /**
-     * <pre>
      * <factor> ::= <literal>
      *            | <identifier>
-     *            | <special_object>       -- IDENT "." IDENT
-     *            | <function_call>        -- IDENT "(" … ")"
+     *            | <special_object>    IDENT "." IDENT
+     *            | <function_call>     IDENT "(" ... ")"
      *            | "(" <expression> ")"
      *            | "-" <factor>
-     * </pre>
      */
     private ASTNode parseFactor() {
         // Unary minus
@@ -400,19 +364,17 @@ public class Parser {
             return new ASTNode.BooleanLiteral(false);
         }
 
-        // IDENT "(" … ")"   - function call
-        // IDENT "." IDENT   - special object
-        // IDENT             - plain identifier
+        // IDENT "(" ... ")"  - function call
+        // IDENT "." IDENT    - special object
+        // IDENT              - plain identifier
         if (check(TokenType.IDENT)) {
             String name = current.literal;
             advance();
 
-            // function call
             if (check(TokenType.LPAREN)) {
                 return parseFunctionCallTail(name);
             }
 
-            // special object  (IDENT "." IDENT)
             if (check(TokenType.DOT)) {
                 advance(); // consume "."
                 String field = expect(TokenType.IDENT).literal;
@@ -426,15 +388,9 @@ public class Parser {
                 + (current.literal != null ? " ('" + current.literal + "')" : ""));
     }
 
-
-    // Function call
     /**
      * Called after the function name has already been consumed.
-     *
-     * <pre>
-     * <function_call> ::= IDENT "()"
-     *                   | IDENT "(" <argument_list> ")"
-     * </pre>
+     * <function_call> ::= IDENT "()" | IDENT "(" <argument_list> ")"
      */
     private ASTNode.FunctionCall parseFunctionCallTail(String name) {
         expect(TokenType.LPAREN);
@@ -447,9 +403,7 @@ public class Parser {
     }
 
     /**
-     * <pre>
      * <argument_list> ::= <expression> ("," <expression>)*
-     * </pre>
      */
     private List<ASTNode> parseArgumentList() {
         List<ASTNode> args = new ArrayList<>();
@@ -461,8 +415,7 @@ public class Parser {
         return args;
     }
 
-    // Utility
-    // Consume a NEWLINE token if present. At EOF a missing NEWLINE is tolerated
+    // Consume a NEWLINE token if present. At EOF a missing NEWLINE is tolerated.
     private void consumeNewline() {
         if (check(TokenType.NEWLINE)) {
             advance();
@@ -471,7 +424,6 @@ public class Parser {
         }
     }
 
-    // ParseException
     // Unchecked exception thrown on any syntax error
     public static class ParseException extends RuntimeException {
         public ParseException(String message) { super(message); }
