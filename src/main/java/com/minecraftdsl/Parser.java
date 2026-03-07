@@ -104,11 +104,6 @@ public class Parser {
      *               | <comment>
      */
     private ASTNode parseStatement() {
-        // Comment  -->  "-- ..." until end of line
-        if (check(TokenType.IDENT) && current.literal != null && current.literal.startsWith("--")) {
-            return parseComment();
-        }
-
         switch (current.type) {
             case FOR:   return parseFor();
             case WHILE: return parseWhile();
@@ -144,14 +139,6 @@ public class Parser {
                 throw new ParseException("Unexpected token at start of statement: " + current.type
                         + (current.literal != null ? " ('" + current.literal + "')" : ""));
         }
-    }
-
-    // Comments are lexed as a single IDENT token whose literal begins with "--".
-    private ASTNode.Comment parseComment() {
-        String text = current.literal;
-        advance();
-        consumeNewline();
-        return new ASTNode.Comment(text.substring(2));
     }
 
     /**
