@@ -52,7 +52,10 @@ public class Lexer {
         Deque<Integer> indentStack = new ArrayDeque<>();
         indentStack.push(0);
 
-        for (String rawLine : lines) {
+        for (int lineNum = 0; lineNum < lines.length; lineNum++) {
+            String rawLine = lines[lineNum];
+            int lineNumber = lineNum + 1; // 1-based line numbering for user-facing messages
+
             // ---- measure leading spaces / tabs (1 tab = 1 indent level) ----
             int indent = 0;
             int i = 0;
@@ -69,20 +72,22 @@ public class Lexer {
             int current = indentStack.peek();
             if (indent > current) {
                 indentStack.push(indent);
-                tokens.add(new Token(TokenType.INDENT));
+                tokens.add(new Token(TokenType.INDENT, lineNumber, indent));
             } else {
                 while (indent < indentStack.peek()) {
                     indentStack.pop();
-                    tokens.add(new Token(TokenType.DEDENT));
+                    tokens.add(new Token(TokenType.DEDENT, lineNumber, indent + 1));
                 }
             }
 
             // lex the content of the line
             Matcher m = MASTER.matcher(content);
             int pos = 0;
+            int colOffset = indent; // column starts after indentation
             while (pos < content.length()) {
                 // skip inline whitespace
                 if (content.charAt(pos) == ' ' || content.charAt(pos) == '\t') {
+                    colOffset++;
                     pos++;
                     continue;
                 }
@@ -103,31 +108,34 @@ public class Lexer {
                     }
 
                     TokenType type = spec.type;
+                    int tokenCol = colOffset + 1; // 1-based column numbering
 
                     // keyword check for identifiers
                     if (type == TokenType.IDENT) {
                         type = Keywords.lookup(matched);
                         tokens.add(type == TokenType.IDENT
-                                ? new Token(TokenType.IDENT, matched)
-                                : new Token(type));
+                                ? new Token(TokenType.IDENT, matched, lineNumber, tokenCol)
+                                : new Token(type, lineNumber, tokenCol));
                     } else if (type == TokenType.STRING) {
                         // strip surrounding quotes
-                        tokens.add(new Token(TokenType.STRING, matched.substring(1, matched.length() - 1)));
+                        tokens.add(new Token(TokenType.STRING, matched.substring(1, matched.length() - 1), lineNumber, tokenCol));
                     } else if (type == TokenType.NUMBER) {
-                        tokens.add(new Token(TokenType.NUMBER, matched));
+                        tokens.add(new Token(TokenType.NUMBER, matched, lineNumber, tokenCol));
                     } else {
-                        tokens.add(new Token(type));
+                        tokens.add(new Token(type, lineNumber, tokenCol));
                     }
 
+                    colOffset += matched.length();
                     pos = m.end();
                 } else {
 
-                    tokens.add(new Token(TokenType.ILLEGAL, String.valueOf(content.charAt(pos))));
+                    tokens.add(new Token(TokenType.ILLEGAL, String.valueOf(content.charAt(pos)), lineNumber, colOffset + 1));
+                    colOffset++;
                     pos++;
                 }
             }
 
-            tokens.add(new Token(TokenType.NEWLINE));
+            tokens.add(new Token(TokenType.NEWLINE, lineNumber, colOffset + 1));
         }
 
         while (indentStack.size() > 1) {

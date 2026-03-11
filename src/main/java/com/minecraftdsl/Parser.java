@@ -28,17 +28,16 @@ public class Parser {
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
-        advance(); // prime the pump
+        this.cursor = 0;
+        this.current = tokens.get(0);
     }
 
     // Token navigation helpers
     // Move to the next token and return it.
     private Token advance() {
-        cursor++;
-        if (cursor < tokens.size()) {
+        if (cursor + 1 < tokens.size()) {
+            cursor++;
             current = tokens.get(cursor);
-        } else {
-            current = new Token(TokenType.EOF, null);
         }
         return current;
     }
@@ -46,8 +45,8 @@ public class Parser {
     // Peek ahead
     private Token peek(int offset) {
         int idx = cursor + offset;
-        if (idx < tokens.size()) return tokens.get(idx);
-        return new Token(TokenType.EOF, null);
+        if (idx >= tokens.size()) idx = tokens.size() - 1;
+        return tokens.get(idx);
     }
 
     // Return true if the current token has the given type
@@ -59,7 +58,8 @@ public class Parser {
         if (!check(type)) {
             throw new ParseException(
                     "Expected " + type + " but got " + current.type
-                            + (current.literal != null ? " ('" + current.literal + "')" : ""));
+                            + (current.literal != null ? " ('" + current.literal + "')" : "")
+                            + " at line " + current.line + ", column " + current.col);
         }
         Token t = current;
         advance();
@@ -128,7 +128,8 @@ public class Parser {
                     ASTNode expr = parseExpression();
                     if (!(expr instanceof ASTNode.FunctionCall)) {
                         throw new ParseException(
-                                "Expected a function call or assignment as statement, got: " + expr);
+                                "Expected a function call or assignment as statement, got: " + expr
+                                        + " at line " + current.line + ", column " + current.col);
                     }
                     consumeNewline();
                     return expr;
@@ -137,7 +138,8 @@ public class Parser {
 
             default:
                 throw new ParseException("Unexpected token at start of statement: " + current.type
-                        + (current.literal != null ? " ('" + current.literal + "')" : ""));
+                        + (current.literal != null ? " ('" + current.literal + "')" : "")
+                        + " at line " + current.line + ", column " + current.col);
         }
     }
 
@@ -271,7 +273,8 @@ public class Parser {
             case GT:  return ">";
             case LTE: return "<=";
             case GTE: return ">=";
-            default:  throw new ParseException("Not a comparison op: " + t);
+            default:  throw new ParseException("Not a comparison op: " + t
+                    + " at line " + current.line + ", column " + current.col);
         }
     }
 
@@ -372,7 +375,8 @@ public class Parser {
         }
 
         throw new ParseException("Unexpected token in expression: " + current.type
-                + (current.literal != null ? " ('" + current.literal + "')" : ""));
+                + (current.literal != null ? " ('" + current.literal + "')" : "")
+                + " at line " + current.line + ", column " + current.col);
     }
 
     /**
@@ -407,7 +411,7 @@ public class Parser {
         if (check(TokenType.NEWLINE)) {
             advance();
         } else if (!check(TokenType.EOF)) {
-            throw new ParseException("Expected NEWLINE after statement, got: " + current.type);
+            throw new ParseException("Expected NEWLINE after statement, got: " + current.type + " at line " + current.line + ", column " + current.col);
         }
     }
 
