@@ -28,13 +28,14 @@ public class Parser {
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
-        advance(); // prime the pump
+        this.cursor = 0;
+        this.current = tokens.get(0);
     }
 
     // Token navigation helpers
     // Move to the next token and return it.
     private Token advance() {
-        if (current.type != TokenType.EOF) {
+        if (cursor + 1 < tokens.size()) {
             cursor++;
             current = tokens.get(cursor);
         }
@@ -57,7 +58,8 @@ public class Parser {
         if (!check(type)) {
             throw new ParseException(
                     "Expected " + type + " but got " + current.type
-                            + (current.literal != null ? " ('" + current.literal + "')" : ""));
+                            + (current.literal != null ? " ('" + current.literal + "')" : "")
+                            + " at line " + current.line + ", column " + current.col);
         }
         Token t = current;
         advance();
@@ -126,7 +128,8 @@ public class Parser {
                     ASTNode expr = parseExpression();
                     if (!(expr instanceof ASTNode.FunctionCall)) {
                         throw new ParseException(
-                                "Expected a function call or assignment as statement, got: " + expr);
+                                "Expected a function call or assignment as statement, got: " + expr
+                                        + " at line " + current.line + ", column " + current.col);
                     }
                     consumeNewline();
                     return expr;
@@ -135,7 +138,8 @@ public class Parser {
 
             default:
                 throw new ParseException("Unexpected token at start of statement: " + current.type
-                        + (current.literal != null ? " ('" + current.literal + "')" : ""));
+                        + (current.literal != null ? " ('" + current.literal + "')" : "")
+                        + " at line " + current.line + ", column " + current.col);
         }
     }
 
@@ -269,7 +273,8 @@ public class Parser {
             case GT:  return ">";
             case LTE: return "<=";
             case GTE: return ">=";
-            default:  throw new ParseException("Not a comparison op: " + t);
+            default:  throw new ParseException("Not a comparison op: " + t
+                    + " at line " + current.line + ", column " + current.col);
         }
     }
 
@@ -370,7 +375,8 @@ public class Parser {
         }
 
         throw new ParseException("Unexpected token in expression: " + current.type
-                + (current.literal != null ? " ('" + current.literal + "')" : ""));
+                + (current.literal != null ? " ('" + current.literal + "')" : "")
+                + " at line " + current.line + ", column " + current.col);
     }
 
     /**
