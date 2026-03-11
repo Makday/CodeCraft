@@ -20,6 +20,21 @@ public class Token {
         this.col = col;
     }
 
+    // Constructors for backwards compatibility (default position)
+    public Token(TokenType type, String literal) {
+        this.type = type;
+        this.literal = literal;
+        this.line = 0;
+        this.col = 0;
+    }
+
+    public Token(TokenType type) {
+        this.type = type;
+        this.literal = null;
+        this.line = 0;
+        this.col = 0;
+    }
+
     @Override
     public String toString() {
         if (literal != null)
