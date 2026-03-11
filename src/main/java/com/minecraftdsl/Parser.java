@@ -34,11 +34,9 @@ public class Parser {
     // Token navigation helpers
     // Move to the next token and return it.
     private Token advance() {
-        cursor++;
-        if (cursor < tokens.size()) {
+        if (current.type != TokenType.EOF) {
+            cursor++;
             current = tokens.get(cursor);
-        } else {
-            current = new Token(TokenType.EOF, null);
         }
         return current;
     }
@@ -46,8 +44,8 @@ public class Parser {
     // Peek ahead
     private Token peek(int offset) {
         int idx = cursor + offset;
-        if (idx < tokens.size()) return tokens.get(idx);
-        return new Token(TokenType.EOF, null);
+        if (idx >= tokens.size()) idx = tokens.size() - 1;
+        return tokens.get(idx);
     }
 
     // Return true if the current token has the given type
