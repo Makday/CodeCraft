@@ -411,7 +411,7 @@ public class Parser {
         if (check(TokenType.NEWLINE)) {
             advance();
         } else if (!check(TokenType.EOF)) {
-            throw new ParseException("Expected NEWLINE after statement, got: " + current.type);
+            throw new ParseException("Expected NEWLINE after statement, got: " + current.type + " at line " + current.line + ", column " + current.col);
         }
     }
 

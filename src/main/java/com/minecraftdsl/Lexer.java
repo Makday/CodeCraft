@@ -72,7 +72,7 @@ public class Lexer {
             int current = indentStack.peek();
             if (indent > current) {
                 indentStack.push(indent);
-                tokens.add(new Token(TokenType.INDENT, lineNumber, indent + 1));
+                tokens.add(new Token(TokenType.INDENT, lineNumber, indent));
             } else {
                 while (indent < indentStack.peek()) {
                     indentStack.pop();
