@@ -37,8 +37,9 @@ public class Token {
 
     @Override
     public String toString() {
+        String location = "[" + line + ":" + col + "]";
         if (literal != null)
-            return "Token(" + type + ", " + literal + ")";
-        return "Token(" + type + ")";
+            return "Token(" + type + ", " + literal + ", " + location + ")";
+        return "Token(" + type + ", " + location + ")";
     }
 }
