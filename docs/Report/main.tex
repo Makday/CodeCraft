@@ -1,0 +1,68 @@
+\documentclass{tum_report}
+
+\usepackage{pdfpages}
+\usepackage{longtable, booktabs, array}
+\usepackage{calc}
+\usepackage{forest}
+
+\bibliographystyle{tex_files/bibliography/styles/iso690} % downloaded from some chech uni
+
+
+\begin{document}
+
+    \input{tex_files/title_page}
+    \clearpage
+
+    \input{tex_files/abstract} 
+    \clearpage
+
+    \addtocontents{toc}{\protect \thispagestyle{empty}}
+    \tableofcontents
+    \thispagestyle{empty}
+    \clearpage
+
+    \input{tex_files/introduction}
+    \clearpage
+
+    \input{tex_files/domain_analysis}
+    \clearpage
+
+    \input{tex_files/language_design}
+    \clearpage
+
+    \input{tex_files/language_implementation}
+    \clearpage
+
+    %\input{tex_files/midterm2}
+    %\clearpage
+
+    \input{tex_files/conclusion}
+    \clearpage
+    
+    \phantomsection
+    \addcontentsline{toc}{chapter}{Bibliography}
+
+    % you can use either .bib format or .tex. Please, do not use both, comment the one you don't need.
+    \nocite{*} 
+    \bibliography{tex_files/bibliography/bibliography} % .bib
+
+
+    \clearpage
+    \appendix
+    \input{tex_files/appendix/grammar}
+
+    \chapter{Team Contract} 
+    \label{appendix:contract}
+    This appendix contains the signed team contract agreed upon at the 
+    start of the project.
+    \includepdf[pages=-]{tex_files/appendix/TeamContractSigned.pdf}
+
+    \input{tex_files/appendix/pbl_problem_map.tex}
+
+    \input{tex_files/appendix/project_plan.tex}
+
+    \chapter{Derivation Trees and Abstract Syntax Trees} 
+    \label{appendix:asts}
+    \includepdf[pages=-]{tex_files/appendix/asts.pdf}
+
+\end{document}

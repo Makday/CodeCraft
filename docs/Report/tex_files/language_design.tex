@@ -1,0 +1,37 @@
+\chapter{Language Design}
+
+\input{tex_files/language_design/dsl_requirements.tex}
+
+\section{The Grammar}
+
+The DSL follows an imperative, statement-oriented structure where a program consists of a sequential list of statements. 
+Each statement occupies its own line, with newlines acting as statement terminators rather than semicolons, reducing syntactic noise for novice learners.
+
+The language supports six categories of statements: variable assignments, two forms of iteration, a while loop, a conditional, function calls, and single-line comments. 
+Comments are introduced with a double dash (\texttt{--}), a deliberate choice to avoid conflict with the subtraction operator and to remain readable.
+
+Iteration is provided in two forms. 
+A count-based loop (\texttt{for N times}) allows repetition without requiring the learner to manage an explicit iterator, which lowers the cognitive barrier for simple repetitive tasks. 
+A range-based loop (\texttt{for x from A to B}) introduces the concept of an iterator variable progressively, once the learner is ready for it. 
+Both forms use indentation-based block delimitation, consistent with Python-like conventions that children are likely to encounter in subsequent languages.
+
+Expressions follow a standard left-recursive arithmetic structure supporting addition, subtraction, multiplication, and division, with parentheses available for grouping. 
+A special dot-notation construct (\texttt{object.property}) is provided to represent Minecraft-specific entities and their attributes, offering a lightweight form of structured data access without introducing full object-oriented semantics.
+
+Identifiers follow conventional alphanumeric rules with underscore support. 
+Literals include integers, quoted strings, and boolean values (\texttt{true}/\texttt{false}). 
+Whitespace handling is made explicit in the grammar, with optional spacing permitted around operators and delimiters to give learners flexibility in formatting their code.
+
+\subsection{Grammar Notation Conventions}
+
+The grammar is written in Backus--Naur Form (BNF), where non-terminal symbols are enclosed in angle brackets and terminal symbols appear as quoted string literals.
+Several special tokens and conventions are used throughout the grammar and are defined as follows:
+
+\begin{itemize}
+    \item[\textbf{--}] \textbf{NEWLINE:} Represents a line break character (\texttt{\textbackslash n}), used to terminate statements and signal the end of a logical line.
+    \item[\textbf{--}] \textbf{INDENT:} Represents an increase in indentation level at the beginning of a line. The grammar does not prescribe a fixed indentation width; any consistent combination of spaces or tabs is accepted, consistent with learner-friendly formatting conventions.
+    \item[\textbf{--}] \textbf{DEDENT:} Represents a decrease in indentation level, signaling the end of an indented block. It is the logical counterpart of \textbf{INDENT}.
+    \item[\textbf{--}] \textbf{$\varepsilon$:} Denotes the empty string, used in productions where a symbol may derive nothing, such as optional whitespace or an empty character sequence.
+\end{itemize}
+
+The complete formal grammar in BNF notation is provided in Appendix~\ref{appendix:grammar}.
