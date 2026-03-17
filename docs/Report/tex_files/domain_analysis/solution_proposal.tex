@@ -1,0 +1,109 @@
+\section{Solution Proposal}
+
+Young learners need a programming environment where code produces instant visual results within a game they love. 
+Minecraft offers a solution because children already invest hours in the game and want to improve their gameplay, additionally, it also offers an interactive digital environment that closely aligns with core programming and computational thinking concepts. 
+Actions performed by players occur in a clear sequence, which reflects the execution of instructions in imperative programming. 
+Repetitive gameplay activities such as mining blocks, farming resources, or crafting items correspond to loop structures, where the same operation is repeated until a specific condition is satisfied. 
+Decision-making in response to in-game situations, including reacting to nightfall, selecting appropriate tools, or avoiding hostile entities, mirrors conditional logic used in programming. 
+Managing inventory items is similar to dealing with variables that change over time, while recurring building patterns and construction methods resemble the use of procedures and modular design. 
+In-game events such as mob spawning or environmental changes parallel event-driven programming models. 
+These conceptual parallels have been identified and discussed in multiple studies examining the educational use of Minecraft in STEM and computational thinking contexts \cite{md_shamsudin_crafting_2024, nebel_mining_2016}.
+
+A study focusing on Minecraft-based coding activities with middle school students reported statistically significant improvements in computational thinking dimensions such as sequencing, loops, conditionals, events, and parallelism following a structured instructional intervention \cite{tablatin_using_2023}. 
+Systematic reviews of empirical studies from the past decade also find that Minecraft can help learners grasp basic programming concepts, provided that learning goals and instructional support are clearly defined \cite{nebel_mining_2016, md_shamsudin_crafting_2024}.
+
+Minecraft has seen substantial adoption in formal educational contexts, primarily through Minecraft Education Edition, which is designed specifically for classroom use. 
+According to Microsoft Education, tens of millions of teachers and students across more than one hundred countries have access to licensed versions of the platform, indicating widespread institutional uptake rather than isolated experimentation \cite{noauthor_licensing_nodate}. 
+A systematic literature review covering studies published between 2015 and 2024 confirms that Minecraft has been implemented across primary and secondary education, most frequently within STEM subjects, and that many educators continue to use it beyond initial trials \cite{md_shamsudin_crafting_2024}. 
+Although precise global percentages of schools using Minecraft are not consistently reported, the scale of adoption and the volume of peer-reviewed research demonstrate that Minecraft is an established educational platform.
+
+Research on the educational effectiveness of Minecraft consistently reports increased student engagement, motivation, and participation when the platform is integrated into structured learning activities. 
+Studies grounded in constructivist and social constructivist learning theories highlight that Minecraft supports inquiry-based learning, problem solving, collaboration, and spatial reasoning \cite{short_teaching_2012, kotsopoulos_pedagogical_2017}. 
+Experimental research further indicates that Minecraft-based interventions can lead to measurable improvements in spatial and cognitive skills, provided that instructional goals are explicit and teacher guidance is present \cite{ming_exploring_2025}.
+
+At the same time, the literature identifies significant limitations related to technical and programming complexity. 
+Multiple studies report that educators often struggle to design effective Minecraft-based lessons due to limited programming knowledge and lack of confidence with the platform's technical features \cite{bower_improving_2017, nebel_mining_2016}. 
+A recent systematic review emphasizes that insufficient teacher training and high technical barriers frequently result in Minecraft being used in a superficial manner, which reduces its potential to support deeper learning outcomes \cite{md_shamsudin_crafting_2024}. 
+These findings indicate that Minecraft's educational benefits are strongly dependent on pedagogical structure and accessible tooling.
+
+
+This gap creates an opportunity for a domain-specific language that turns programming into an engaging experience. 
+Therefore, the proposed solution is the development of a domain specific language that is suited for children to script actions in Minecraft, with the purpose of learning programming.
+
+
+\subsection{Specific Problems the DSL Solves}
+
+\begin{itemize}
+    \item[\textbf{--}] \textbf{Lack of Immediate Visual Feedback:} 
+    Children write code and expect to see action happen in the game world. 
+    Existing tools separate code execution from visible results. 
+    Learning slows when outcomes stay invisible or appear only as text in a console. 
+    The DSL runs commands directly inside the game environment. 
+    Children watch their bot perform actions the moment they execute the script. 
+    Blocks appear, items move, and structures are built in real time while the code runs.
+
+    \item[\textbf{--}] \textbf{Weak Path Toward Real Programming:} 
+    Children learn logic through drag-and-drop blocks, then face text-based code later without preparation. 
+    The transition feels abrupt and confusing. 
+    The DSL uses simple text commands from the beginning. 
+    Children read and write actual code syntax instead of clicking visual blocks. 
+    The syntax remains clear and readable while teaching real programming structure. 
+    When children move to other languages later, they already understand how text-based code works.
+
+    \item[\textbf{--}] \textbf{Excessive Technical Complexity:} 
+    Current tools require deep technical knowledge to accomplish basic tasks. 
+    Setting up mods, understanding game mechanics, and navigating complex interfaces create a steep learning curve. 
+    The DSL hides these complex mechanics behind clear, simple commands. 
+    Children focus on programming logic and problem structure instead of fighting technical barriers. 
+    Commands abstract away implementation details while still teaching fundamental concepts.
+
+    \item[\textbf{--}] \textbf{Poor Alignment with Modern Learning Patterns:} 
+    Traditional programming education uses long tutorials with delayed gratification. 
+    Children lose interest before seeing meaningful results. 
+    The DSL embeds learning directly inside Minecraft, where children already spend time. 
+    Each command triggers a visible change in the game world. 
+    Engagement stays high because every action produces immediate outcomes that children care about.
+
+    \item[\textbf{--}] \textbf{Missing Support for Independent Learning:} 
+    Children depend on adult help to progress through existing programming tools. 
+    Exploration stops when guidance becomes unavailable. 
+    The DSL supports independent trial and error through clear syntax and fast feedback loops. 
+    Children experiment with commands, see what happens, fix mistakes when things go wrong, and advance on their own. 
+    Parents without programming knowledge no longer need to intervene constantly.
+
+    \item[\textbf{--}] \textbf{Lack of Meaningful Context:} 
+    Programming exercises in traditional curricula feel arbitrary and disconnected from student interests. 
+    Children solve problems they do not care about, so motivation fades quickly. 
+    The DSL ties every coding task to goals children set for themselves in Minecraft. 
+    Building a house, automating a farm, or organizing inventory all serve purposes that children choose. 
+    Each line of code accomplishes something personally meaningful.
+\end{itemize}
+
+\subsection{Use Case Scenarios}
+
+\begin{itemize}
+    \item[\textbf{--}] \textbf{Build a House:}
+    The goal is for the user to place blocks in a consistent pattern to form a simple structure. 
+    A sequence of movement and placement commands is written to define where each block goes. 
+    Correct results depend on executing commands in the right order, and repeating similar actions helps reinforce the idea of structured sequences and repetition.
+
+    \item[\textbf{--}] \textbf{Create a Farming Bot:}
+    The objective is to plant crops in a straight line efficiently. 
+    A repeat instruction combines movement and planting actions so the same steps are applied across multiple blocks. 
+    This use case introduces loops and demonstrates how automation reduces manual effort.
+
+    \item[\textbf{--}] \textbf{Manage Inventory:}
+    The goal is to remove or move items from specific inventory slots. 
+    Inventory and drop commands are written with parameters such as slot numbers and coordinates. 
+    This use case teaches how structured commands and parameters control precise behavior.
+
+    \item[\textbf{--}] \textbf{React to Conditions:}
+    The objective is for the character to respond to changes in game state, such as eating when hunger drops below a certain level. 
+    A condition is defined with an associated action. 
+    This use case introduces decision-making and conditional logic.
+
+    \item[\textbf{--}] \textbf{Chest Management Bot:}
+    The goal is to organize collected items into storage chests by type. 
+    A bot is programmed to move through a base, identify items, and place them into the correct chests. 
+    This use case combines movement, logic, and automation, reinforcing data organization and control flow through a practical task.
+\end{itemize}

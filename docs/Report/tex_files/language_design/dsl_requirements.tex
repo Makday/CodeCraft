@@ -1,5 +1,15 @@
 \section{DSL Requirements}
 
+\subsection{General Language Rules}
+
+Research indicates that children consistently struggle with strict syntax requirements, punctuation rules, language formalities, verbose statements, and inadequate debugging feedback \cite{klimekova_is_2015}.
+Python addresses these challenges through its minimal syntax and readable structure, which explains its widespread adoption in introductory programming courses across universities worldwide \cite{klimekova_is_2015}.
+These findings informed the decision to adopt Python as the primary source of inspiration for the DSL's syntax and overall design.
+
+Empirical research on identifier naming conventions demonstrates that different styles --- camelCase, PascalCase, and snake\_case --- impose measurably different levels of visual effort and affect the speed at which identifiers are recognised by the reader. 
+Studies using eye-tracking methodology found that snake\_case yields the lowest visual effort and the highest recognition speed, particularly among novice programmers \cite{sharif_eye_2010}. 
+Consequently, snake\_case was selected as the identifier style for all predefined variables and functions in the DSL.
+
 \subsection{Language Paradigm}
 
 Given that the DSL targets children with minimal programming experience, an imperative paradigm was selected as the foundational approach. 
@@ -18,12 +28,6 @@ Variables are essential for storing coordinates, object IDs, and other Minecraft
 To enable process automation, the DSL will incorporate conditional statements and iterative constructs for handling repetitive tasks. 
 As these represent fundamental components of most programming languages, their inclusion supports progressive learning objectives.
 
-The DSL will include support for user-defined functions, enabling learners to encapsulate operation sequences into reusable procedures. 
-This capability reinforces the compositional approach to building complex functionality while introducing a fundamental programming concept essential for managing code complexity and promoting modular thinking.
-
-Regarding abstract data types, the DSL will provide a List structure to facilitate the storage of multiple values. 
-Other abstract data types were deemed unsuitable for the anticipated use cases and are therefore excluded from the language specification.
-
 \subsection{Abstraction Level and Complexity of Functionalities}
 
 To preserve user flexibility and support progressive skill development, the DSL will adopt a layered abstraction approach, providing both primitive and composite operations. 
@@ -35,7 +39,7 @@ Such an approach promotes understanding of functional composition in computation
 
 \subsection{DSL Limitations}
 
-To prevent implementation complexity, the DSL will not change the game's state with means external to the user's in-game character. 
+To prevent implementation complexity and breaking Minecraft official policies, the DSL will not change the game's state with means external to the user's in-game character. 
 Thus, the DSL allows the user to interact with the game only through their character.
 
 Although the usage of the DSL is intended for children, the installation process of the DSL requires external assistance.
