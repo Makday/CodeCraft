@@ -1,0 +1,163 @@
+\chapter{PBL Problem Map}
+
+\ifdefined\colA\else\newlength{\colA}\fi
+\ifdefined\colB\else\newlength{\colB}\fi
+\ifdefined\colC\else\newlength{\colC}\fi
+\setlength{\colA}{\dimexpr 0.13\textwidth - \tabcolsep\relax}
+\setlength{\colB}{\dimexpr 0.53\textwidth - \tabcolsep\relax}
+\setlength{\colC}{\dimexpr 0.34\textwidth - 2\tabcolsep\relax}
+
+% Reusable command for a single-row table
+% #1 = col1, #2 = col2, #3 = col3, #4 = extra rule (pass \midrule or nothing)
+\newcommand{\pblrow}[4]{%
+  \noindent{\small\begin{tabular}{@{}
+    >{\raggedright\arraybackslash}p{\colA}
+    >{\raggedright\arraybackslash}p{\colB}
+    >{\raggedright\arraybackslash}p{\colC}@{}}
+  #4
+  \parbox[t]{\colA}{\small #1\strut} &
+  \parbox[t]{\colB}{\small #2\strut} &
+  \parbox[t]{\colC}{\small #3\strut} \\
+  \bottomrule
+  \end{tabular}}%
+  \par\medskip
+}
+
+% ── Header row ───────────────────────────────────────────────────────────────
+\noindent{\small\begin{tabular}{@{}
+  >{\raggedright\arraybackslash}p{\colA}
+  >{\raggedright\arraybackslash}p{\colB}
+  >{\raggedright\arraybackslash}p{\colC}@{}}
+\toprule
+\textbf{TYPE OF QUESTION} & \textbf{EXAMPLES OF QUESTIONS} & \textbf{SHORT ANSWER} \\
+\bottomrule
+\end{tabular}}
+\par\medskip
+
+% ── Row a) ───────────────────────────────────────────────────────────────────
+\pblrow{a)}{Present the problem situation in 5--7 sentences.}{%
+  Children today face unprecedented challenges with attention span and sustained
+  focus, making traditional programming education---which often involves lengthy
+  tutorials, abstract concepts, and delayed gratification---increasingly
+  ineffective. Gamification has emerged as a powerful educational strategy that
+  leverages game mechanics, instant feedback, and intrinsic motivation to
+  maintain engagement and facilitate learning. Minecraft represents an ideal
+  platform for gamified programming education, as children are already deeply
+  invested in the game and motivated to enhance their gameplay experience.
+  However, existing Minecraft programming solutions are too complex for young
+  learners and fail to incorporate gamified learning principles that could
+  sustain their attention. There is a critical need for a domain-specific
+  language that transforms programming education into an engaging, game-like
+  experience within Minecraft, where children see immediate results from their
+  code through scripted actions executed in the game.%
+}{\toprule}
+
+% ── Row b) ───────────────────────────────────────────────────────────────────
+\pblrow{b)}{Formulate the problem -- 1 statement.}{%
+  Children's limited attention spans prevent them from learning programming
+  through traditional methods, which often lack immediate visual feedback and
+  engaging concepts.%
+}{\toprule}
+
+% ── Who ──────────────────────────────────────────────────────────────────────
+\pblrow{Who\ldots?}{%
+  1. Who has a problem?\par
+  2. Who is involved in the problem situation?\par
+  3. Who suffers from the problem?\par
+  4. Who should take part in solving the problem?%
+}{%
+  1. Children.\par
+  2. Children, parents, professionals of the educational domain,
+     authorities concerned with education.\par
+  3. Children.\par
+  4. Authorities concerned with education, DSL designers and developers,
+     teachers.%
+}{\toprule}
+
+% ── What / Which ─────────────────────────────────────────────────────────────
+\pblrow{What\ldots?\par Which\ldots?}{%
+  5. What happened?\par
+  6. What is the problem?\par
+  7. What led you to identify the problem?\par
+  8. What are the causes that affect those involved?\par
+  9. What are the needs of those targeted?\par
+  10. What resources are necessary to solve the problem?%
+}{%
+  5. Short-form media has become a main source of information.\par
+  6. Incompatibility between traditional programming education and the
+     attention patterns of modern children.\par
+  7. Research showing declining attention spans in children.\par
+  8. Fast-paced media consumption; limited availability of age-appropriate
+     engaging programming tools.\par
+  9. Immediate visual feedback, game-based learning, progressive difficulty,
+     creative freedom.\par
+  10. DSL developers, educational consultants, UI/UX designers, Minecraft
+      experts, child testers, teacher advisors.%
+}{\toprule}
+
+% ── Where ────────────────────────────────────────────────────────────────────
+\pblrow{Where\ldots?}{%
+  11. Where did the problem arise?%
+}{%
+  11. At the intersection of children's educational environments (homes,
+      schools, after-school programs) and their recreational gaming spaces.%
+}{\toprule}
+
+% ── When ─────────────────────────────────────────────────────────────────────
+\pblrow{When\ldots?}{%
+  12. When did the problem arise?\par
+  13. When was the problem identified?\par
+  14. When is it planned to be resolved?%
+}{%
+  12. Progressively over the past decade (2015--2025), as exposure to
+      fast-paced digital media increased.\par
+  13. During the initial stages of the PBL project (2025--2026 academic year).\par
+  14. By the end of the current semester.%
+}{\toprule}
+
+% ── Why ──────────────────────────────────────────────────────────────────────
+\pblrow{Why\ldots?}{%
+  15. Why is there a need to solve the problem?%
+}{%
+  15. Programming and computational thinking are essential 21st-century skills.
+      Without intervention, an entire generation may miss foundational digital
+      literacy skills necessary for future academic and career success.%
+}{\toprule}
+
+% ── How ──────────────────────────────────────────────────────────────────────
+\pblrow{How\ldots?}{%
+  16. How can the problem be solved?\par
+  17. How will the elimination of the problem be determined?%
+}{%
+  16. Gamification of the learning process.\par
+  17. By the number of users of the solution and the number of educational
+      systems that have adopted it.%
+}{\toprule}
+
+% ── How much ─────────────────────────────────────────────────────────────────
+\pblrow{How much\ldots?}{%
+  18. How big is the problem?\par
+  19. How many people are affected?\par
+  20. How long will it take to resolve?\par
+  21. How many parties need to be involved?%
+}{%
+  18. Global~--- affects generations of children with excessive exposure to
+      digital technologies.\par
+  19. Estimated at over 140 million children.\par
+  20. Implementation could potentially be completed in 6~months.\par
+  21. Minimum 3 parties.%
+}{\toprule}
+
+% ── Other ────────────────────────────────────────────────────────────────────
+\pblrow{Other (optional)}{%
+  22. How do you see solving this problem?\par
+  23. Conclusions and reflections.%
+}{%
+  22. The product should contain simplified programming syntax, educator
+      resources, and use-case tutorials suited for children. Given Minecraft's
+      popularity, success potential is high.\par
+  23. The Minecraft Bot Maker DSL addresses a genuine and growing educational
+      challenge; if done right, it could become a fundamental learning tool.%
+}{\toprule}
+
+\clearpage
