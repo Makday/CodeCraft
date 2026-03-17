@@ -1,0 +1,41 @@
+\section{DSL Requirements}
+
+\subsection{Language Paradigm}
+
+Given that the DSL targets children with minimal programming experience, an imperative paradigm was selected as the foundational approach. 
+Empirical research demonstrates that imperative programming exhibits one of the lowest learning curves among major paradigms \cite{ugwumba_programming_2026}. 
+This paradigm is particularly suitable for novice learners, as it aligns with sequential, step-by-step reasoning patterns and facilitates code comprehension during debugging processes.
+
+While object-oriented programming presents comparable learning difficulty to imperative programming \cite{ugwumba_programming_2026}, it was deemed less appropriate for this context. 
+The object-oriented paradigm emphasizes abstraction and code encapsulation, concepts that may prove challenging for the target demographic. 
+Additionally, object-oriented approaches typically require more verbose code structures, introducing unnecessary complexity beyond the DSL's intended scope.
+
+\subsection{Core Language Constructs}
+
+The DSL should include variables to familiarize children with a core component of most programming languages. 
+Variables are essential for storing coordinates, object IDs, and other Minecraft elements that users need to manipulate.
+
+To enable process automation, the DSL will incorporate conditional statements and iterative constructs for handling repetitive tasks. 
+As these represent fundamental components of most programming languages, their inclusion supports progressive learning objectives.
+
+The DSL will include support for user-defined functions, enabling learners to encapsulate operation sequences into reusable procedures. 
+This capability reinforces the compositional approach to building complex functionality while introducing a fundamental programming concept essential for managing code complexity and promoting modular thinking.
+
+Regarding abstract data types, the DSL will provide a List structure to facilitate the storage of multiple values. 
+Other abstract data types were deemed unsuitable for the anticipated use cases and are therefore excluded from the language specification.
+
+\subsection{Abstraction Level and Complexity of Functionalities}
+
+To preserve user flexibility and support progressive skill development, the DSL will adopt a layered abstraction approach, providing both primitive and composite operations. 
+Primitive operations include atomic actions such as block placement, directional orientation, jumping, clicking, and inventory management. 
+Composite operations encompass higher-level tasks including wall construction, water removal from defined areas, and automated crop cultivation.
+
+This architectural design enables users to construct custom high-level functionalities by composing primitive operations when predefined composite operations do not satisfy specific requirements. 
+Such an approach promotes understanding of functional composition in computational thinking.
+
+\subsection{DSL Limitations}
+
+To prevent implementation complexity, the DSL will not change the game's state with means external to the user's in-game character. 
+Thus, the DSL allows the user to interact with the game only through their character.
+
+Although the usage of the DSL is intended for children, the installation process of the DSL requires external assistance.

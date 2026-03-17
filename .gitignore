@@ -41,7 +41,10 @@ build/
 .idea
 
 ### LaTeX ###
-
+*.bbl
+*.blg
+*.toc
+*.out
 *.aux
 *.log
 *.synctex.gz

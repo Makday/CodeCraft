@@ -1,0 +1,162 @@
+\section{Problem Definition and Use Cases}
+
+\subsection{Problem Definition}
+
+Modern children face severe attention span challenges that make traditional programming education ineffective. 
+Standard programming courses require prolonged focus, abstract thinking, and patience for delayed results. 
+These requirements clash with how children consume information today. 
+Minecraft offers a solution because children already invest hours in the game and want to improve their gameplay. 
+Current Minecraft programming tools demand too much technical knowledge and fail to provide immediate, visible outcomes. 
+Young learners need a programming environment where code produces instant visual results within a game they love. 
+This gap creates an opportunity for a domain-specific language that turns programming into an engaging experience.
+
+\subsection{Technical Barriers in Existing Tools}
+
+Children face Java requirements far above beginner level when working with Minecraft mods. 
+Tools like ComputerCraft use Lua syntax that confuses young learners. 
+Setup complexity takes time before anyone writes a single line of code, which stops learning early. 
+Command blocks, an in-game programming interface, overwhelm beginners from the start. 
+Parents or teachers must handle installation and configuration because children lack the technical knowledge.
+
+\subsection{Pedagogical Gaps}
+
+Children learn abstract concepts without seeing corresponding actions in the game. 
+Block-based tools hide text syntax and create barriers when transitioning to real code. 
+Motivation drops when results feel distant or unclear. 
+Available tools do not match how children interact with digital products today. 
+Educational resources assume adult knowledge or prior programming experience.
+
+\subsection{User Experience Problems}
+
+Text output appears with no connection to in-game action. 
+Feedback loops take too long after writing code. 
+Error messages confuse rather than guide young learners. 
+No clear difficulty progression exists to match skill growth. 
+Interface complexity becomes an obstacle instead of supporting the learning process.
+
+\subsection{Specific Problems the DSL Solves}
+
+\begin{itemize}
+    \item[\textbf{--}] \textbf{Lack of Immediate Visual Feedback:} 
+    Children write code and expect to see action happen in the game world. 
+    Existing tools separate code execution from visible results. 
+    Learning slows when outcomes stay invisible or appear only as text in a console. 
+    The DSL runs commands directly inside the game environment. 
+    Children watch their bot perform actions the moment they execute the script. 
+    Blocks appear, items move, and structures are built in real time while the code runs.
+
+    \item[\textbf{--}] \textbf{Weak Path Toward Real Programming:} 
+    Children learn logic through drag-and-drop blocks, then face text-based code later without preparation. 
+    The transition feels abrupt and confusing. 
+    The DSL uses simple text commands from the beginning. 
+    Children read and write actual code syntax instead of clicking visual blocks. 
+    The syntax remains clear and readable while teaching real programming structure. 
+    When children move to other languages later, they already understand how text-based code works.
+
+    \item[\textbf{--}] \textbf{Excessive Technical Complexity:} 
+    Current tools require deep technical knowledge to accomplish basic tasks. 
+    Setting up mods, understanding game mechanics, and navigating complex interfaces create a steep learning curve. 
+    The DSL hides these complex mechanics behind clear, simple commands. 
+    Children focus on programming logic and problem structure instead of fighting technical barriers. 
+    Commands abstract away implementation details while still teaching fundamental concepts.
+
+    \item[\textbf{--}] \textbf{Poor Alignment with Modern Learning Patterns:} 
+    Traditional programming education uses long tutorials with delayed gratification. 
+    Children lose interest before seeing meaningful results. 
+    The DSL embeds learning directly inside Minecraft, where children already spend time. 
+    Each command triggers a visible change in the game world. 
+    Engagement stays high because every action produces immediate outcomes that children care about.
+
+    \item[\textbf{--}] \textbf{Missing Support for Independent Learning:} 
+    Children depend on adult help to progress through existing programming tools. 
+    Exploration stops when guidance becomes unavailable. 
+    The DSL supports independent trial and error through clear syntax and fast feedback loops. 
+    Children experiment with commands, see what happens, fix mistakes when things go wrong, and advance on their own. 
+    Parents without programming knowledge no longer need to intervene constantly.
+
+    \item[\textbf{--}] \textbf{Lack of Meaningful Context:} 
+    Programming exercises in traditional curricula feel arbitrary and disconnected from student interests. 
+    Children solve problems they do not care about, so motivation fades quickly. 
+    The DSL ties every coding task to goals children set for themselves in Minecraft. 
+    Building a house, automating a farm, or organizing inventory all serve purposes that children choose. 
+    Each line of code accomplishes something personally meaningful.
+\end{itemize}
+
+\subsection{Use Case Scenarios}
+
+\begin{itemize}
+    \item[\textbf{--}] \textbf{Build a House:}
+    The goal is for the user to place blocks in a consistent pattern to form a simple structure. 
+    A sequence of movement and placement commands is written to define where each block goes. 
+    Correct results depend on executing commands in the right order, and repeating similar actions helps reinforce the idea of structured sequences and repetition.
+
+    \item[\textbf{--}] \textbf{Create a Farming Bot:}
+    The objective is to plant crops in a straight line efficiently. 
+    A repeat instruction combines movement and planting actions so the same steps are applied across multiple blocks. 
+    This use case introduces loops and demonstrates how automation reduces manual effort.
+
+    \item[\textbf{--}] \textbf{Manage Inventory:}
+    The goal is to remove or move items from specific inventory slots. 
+    Inventory and drop commands are written with parameters such as slot numbers and coordinates. 
+    This use case teaches how structured commands and parameters control precise behavior.
+
+    \item[\textbf{--}] \textbf{React to Conditions:}
+    The objective is for the character to respond to changes in game state, such as eating when hunger drops below a certain level. 
+    A condition is defined with an associated action. 
+    This use case introduces decision-making and conditional logic.
+
+    \item[\textbf{--}] \textbf{Chest Management Bot:}
+    The goal is to organize collected items into storage chests by type. 
+    A bot is programmed to move through a base, identify items, and place them into the correct chests. 
+    This use case combines movement, logic, and automation, reinforcing data organization and control flow through a practical task.
+\end{itemize}
+
+\subsection{Pain Points in Existing Solutions for Teaching Programming}
+
+\begin{itemize}
+    \item[\textbf{--}] \textbf{Scratch and Other Visual Languages:}
+    Scratch lowers the entry barrier by removing syntax errors, but it operates in an abstract environment disconnected from the games children already play. 
+    The visual block system hides real text-based programming syntax, which makes the transition to textual languages like Python or Java difficult \cite{noauthor_connecting_2024}. 
+    As projects grow in complexity, block-based coding limits the types of programs learners can build \cite{guide_scratch_2023}. 
+    Learners often struggle to connect their work to familiar gaming environments, causing engagement to drop \cite{adler_improving_nodate}.
+
+    \item[\textbf{--}] \textbf{Minecraft Education Edition:}
+    Minecraft Education Edition integrates learning into a familiar game, but access requires institutional licensing, limiting home use \cite{noauthor_licensing_nodate}. 
+    The platform targets classroom instruction and emphasizes guided lessons over open-ended experimentation \cite{noauthor_pros_2025}. 
+    Activities rely heavily on pre-built curricula, which reduces creative freedom and limits exploration. 
+    Many children prefer the regular version of Minecraft where friends play, making the educational edition feel isolated from their social gaming environment \cite{sripan_gamified_2025}.
+
+    \item[\textbf{--}] \textbf{ComputerCraft:}
+    ComputerCraft introduces real programming concepts through Lua, but it requires text-based coding from the start. 
+    Installation and setup demand technical knowledge often unavailable to parents. 
+    Documentation assumes prior programming experience, which can overwhelm beginners. 
+    Young learners face high complexity before achieving results, leading to frustration and early disengagement \cite{kazemitabaar_scaffolding_2023}.
+
+    \item[\textbf{--}] \textbf{Other Common Approaches and Their Limitations:}
+    Minecraft command blocks allow in-game automation, but dense syntax produces frequent errors that confuse beginners. 
+    Redstone teaches logic indirectly, and debugging circuits is unclear, making reasoning about failures difficult. 
+    Traditional programming languages such as Python or Java require setup and configuration before learners can see results; syntax errors in early stages often block progress and reduce motivation.
+\end{itemize}
+
+\subsection{Alternative DSLs}
+
+\begin{itemize}
+    \item[\textbf{--}] \textbf{DSL for Modding Minecraft:}
+    DSL for Modding Minecraft is a language designed to help users write Minecraft mods at a high level by generating Java code behind the scenes. 
+    It abstracts away the complexity of setting up and coding in Java, focusing on domain concepts like blocks, items, and entities. 
+    This DSL targets mod creation rather than scripting character behavior inside the game, and requires code generation and build tools to produce an installable mod file \cite{stalla_dsl_2024}.
+
+    \item[\textbf{--}] \textbf{Minescript:}
+    Minescript is a mod that lets users write Python scripts to control Minecraft gameplay. 
+    Scripts run from the in-game console and can access game state, place blocks, and interact with the world. 
+    Although it uses a real language (Python) rather than a specialized DSL syntax, its integration with Minecraft and simplified access to game functions make it a scripting alternative for controlling actions programmatically within the game world \cite{noauthor_minescript_nodate}.
+
+    \item[\textbf{--}] \textbf{SpigotDSL:}
+    SpigotDSL is a Kotlin-based domain-specific library that makes writing server plugins more readable. 
+    It leverages Kotlin's DSL features to express plugin logic (such as event handlers) in a concise way compared to raw Java. 
+    It is a DSL in the sense of domain-focused language design, but it is tied to server plugin development rather than in-game behavior scripting for learners \cite{noauthor_spigotdsl_nodate}.
+\end{itemize}
+
+\subsection{Problem statement }
+
+Children disengage from programming education when learning tools fail to provide immediate visual feedback and do not connect abstract coding concepts to activities that sustain their interest.
