@@ -54,3 +54,266 @@ Conditions are parsed separately from expressions. The \texttt{parseCondition()}
 \subsection{Error Handling}
 
 All syntax errors are reported by throwing a \texttt{ParseException}, an unchecked exception that carries a human-readable message including the offending token type, its literal value where applicable, and its line and column position. This ensures that error messages are actionable for the learner rather than presenting raw internal state.
+
+\section{AST Examples}
+
+The following examples illustrate the simplified abstract syntax trees produced by the parser for various language constructs. Each tree omits certain lexical details (such as spaces and optional formatting) to highlight the essential structure.
+
+\subsection{Variable Assignment}
+
+The assignment statement \texttt{x = 45 * 3 + 2} demonstrates correct operator precedence and nesting of expressions.
+
+\begin{center}
+\begin{forest}
+for tree={
+    font=\small,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=6mm,
+    s sep=4mm,
+    inner sep=2pt
+}
+[{$<$assignment$>$}
+    [{$<$identifier$>$}[{"x"},tier=word]]
+    [{"="}[{"="},tier=word]]
+    [{$<$expression$>$}
+        [{$<$expression$>$}
+            [{$<$term$>$}
+                [{$<$term$>$}
+                    [{$<$number$>$}
+                        [{"45"},tier=word]
+                    ]
+                ]
+                [{"*"},tier=word]
+                [{$<$factor$>$}
+                    [{"3"},tier=word]
+                ]
+            ]
+        ]
+        [{"+"}[{"+"},tier=word]]
+        [{$<$term$>$}
+            [{"2"},tier=word]
+        ]
+    ]
+]
+\end{forest}
+\end{center}
+
+\noindent Corresponding source line:
+\begin{lstlisting}
+x = 45 * 3 + 2
+\end{lstlisting}
+
+\subsection{For Count Loop}
+
+The count loop \texttt{for 2 times x = 1} shows how the block structure is captured via \texttt{INDENT} and \texttt{DEDENT} markers, similar to Python.
+
+\begin{center}
+\begin{forest}
+for tree={
+    font=\small,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=6mm,
+    s sep=4mm,
+    inner sep=2pt
+}
+[{$<$for\_count$>$}
+    [{"for"}[{"for"},tier=word]]
+    [{$<$expression$>$}
+        [{$<$number$>$}[{"2"},tier=word]]
+    ]
+    [{"times"}[{"times"},tier=word]]
+    [{NEWLINE}
+        [{"\textbackslash n"},tier=word]
+    ]
+    [{$<$block$>$}
+        [{INDENT}[{$\rightarrow$},tier=word]]
+        [{$<$assignment$>$}
+            [{$<$identifier$>$}[{"x"},tier=word]]
+            [{"="}[{"="},tier=word]]
+            [{$<$expression$>$}
+                [{$<$number$>$}[{"1"},tier=word]]
+            ]
+        ]
+        [{DEDENT}[{$\leftarrow$},tier=word]]
+    ]
+]
+\end{forest}
+\end{center}
+
+\noindent Corresponding source lines:
+\begin{lstlisting}
+for 2 times
+    x = 1
+\end{lstlisting}
+
+\subsection{For Range Loop}
+
+The range loop \texttt{for x from 1 to 9 y = 1} iterates a variable over a sequence of values. The AST explicitly represents the loop variable, the bounds, and the body.
+
+\begin{center}
+\begin{forest}
+for tree={
+    font=\tiny,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=4mm,
+    s sep=1mm,
+    inner sep=1pt
+}
+[{$<$for\_range$>$}
+    [{"for"}[{"for"},tier=word]]
+    [{$<$identifier$>$}[{"x"},tier=word]]
+    [{"from"}[{"from"},tier=word]]
+    [{$<$expression$>$}
+        [{$<$number$>$}[{"1"},tier=word]]
+    ]
+    [{"to"}[{"to"},tier=word]]
+    [{$<$expression$>$}
+        [{$<$number$>$}[{"9"},tier=word]]
+    ]
+    [{NEWLINE}
+        [{"\textbackslash n"},tier=word]
+    ]
+    [{$<$block$>$}
+        [{INDENT}[{$\rightarrow$},tier=word]]
+        [{$<$assignment$>$}
+            [{$<$identifier$>$}[{"y"},tier=word]]
+            [{"="}[{"="},tier=word]]
+            [{$<$expression$>$}
+                [{$<$number$>$}[{"1"},tier=word]]
+            ]
+        ]
+        [{DEDENT}[{$\leftarrow$},tier=word]]
+    ]
+]
+\end{forest}
+\end{center}
+
+\noindent Corresponding source lines:
+\begin{lstlisting}
+for x from 1 to 9
+    y = 1
+\end{lstlisting}
+
+\subsection{While Loop}
+
+The while loop \texttt{while x > 0 y = 1} demonstrates a condition node containing a comparison operator.
+
+\begin{center}
+\begin{forest}
+for tree={
+    font=\tiny,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=4mm,
+    s sep=1mm,
+    inner sep=1pt
+}
+[{$<$while\_loop$>$}
+    [{"while"}[{"while"},tier=word]]
+    [{$<$condition$>$}
+        [{$<$expression$>$}
+            [{$<$identifier$>$}[{"x"},tier=word]]
+        ]
+        [{$<$comparison\_op$>$}[{"$>$"},tier=word]]
+        [{$<$expression$>$}
+            [{$<$number$>$}[{"0"},tier=word]]
+        ]
+    ]
+    [{NEWLINE}[{"\textbackslash n"},tier=word]]
+    [{$<$block$>$}
+        [{INDENT}[{$\rightarrow$},tier=word]]
+        [{$<$assignment$>$}
+            [{$<$identifier$>$}[{"y"},tier=word]]
+            [{"="}[{"="},tier=word]]
+            [{$<$expression$>$}
+                [{$<$number$>$}[{"1"},tier=word]]
+            ]
+        ]
+        [{DEDENT}[{$\leftarrow$},tier=word]]
+    ]
+]
+\end{forest}
+\end{center}
+
+\noindent Corresponding source lines:
+\begin{lstlisting}
+while x > 0
+    y = 1
+\end{lstlisting}
+
+\subsection{If-Else Statement}
+
+The conditional statement \texttt{if x == 0 y = 1 else z = 2} shows the structure of an if-else with two separate blocks.
+
+\begin{center}
+\noindent\makebox[\textwidth][c]{
+    \scalebox{0.9}{
+\begin{forest}
+for tree={
+    font=\tiny,
+    grow=south,
+    parent anchor=south,
+    child anchor=north,
+    l sep=4mm,
+    s sep=1mm,
+    inner sep=1pt
+}
+[{$<$if\_stmt$>$}
+    [{"if"}[{"if"},tier=word]]
+    [{$<$condition$>$}
+        [{$<$expression$>$}
+            [{$<$identifier$>$}[{"x"},tier=word]]
+        ]
+        [{$<$comparison\_op$>$}[{"=="},tier=word]]
+        [{$<$expression$>$}
+            [{$<$number$>$}[{"0"},tier=word]]
+        ]
+    ]
+    [{NEWLINE}[{"\textbackslash n"},tier=word]]
+    [{$<$block$>$}
+        [{INDENT}[{$\rightarrow$},tier=word]]
+        [{$<$assignment$>$}
+            [{$<$identifier$>$}[{"y"},tier=word]]
+            [{"="}[{"="},tier=word]]
+            [{$<$expression$>$}
+                [{$<$number$>$}[{"1"},tier=word]]
+            ]
+        ]
+        [{DEDENT}[{$\leftarrow$},tier=word]]
+    ]
+    [{"else"}[{"else"},tier=word]]
+    [{NEWLINE}[{"\textbackslash n"},tier=word]]
+    [{$<$block$>$}
+        [{INDENT}[{$\rightarrow$},tier=word]]
+        [{$<$assignment$>$}
+            [{$<$identifier$>$}[{"z"},tier=word]]
+            [{"="}[{"="},tier=word]]
+            [{$<$expression$>$}
+                [{$<$number$>$}[{"2"},tier=word]]
+            ]
+        ]
+        [{DEDENT}[{$\leftarrow$},tier=word]]
+    ]
+]
+\end{forest}
+    }
+}
+\end{center}
+
+\noindent Corresponding source lines:
+\begin{lstlisting}
+if x == 0
+    y = 1
+else
+    z = 2
+\end{lstlisting}
+
+These examples confirm that the parser correctly handles operator precedence, block structure, and the various control flow constructs defined in the language. The simplified ASTs omit whitespace and delimiters, focusing on the semantic relationships that will be used in later compilation phases.
+The full variants of these ASTs are included in the Appendix~\ref{appendix:asts}..

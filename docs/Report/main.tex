@@ -3,6 +3,7 @@
 \usepackage{pdfpages}
 \usepackage{longtable, booktabs, array}
 \usepackage{calc}
+\usepackage{forest}
 
 \bibliographystyle{tex_files/bibliography/styles/iso690} % downloaded from some chech uni
 
@@ -59,5 +60,9 @@
     \input{tex_files/appendix/pbl_problem_map.tex}
 
     \input{tex_files/appendix/project_plan.tex}
+
+    \chapter{Derivation Trees and Abstract Syntax Trees} 
+    \label{appendix:asts}
+    \includepdf[pages=-]{tex_files/appendix/asts.pdf}
 
 \end{document}
