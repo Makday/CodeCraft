@@ -1,16 +1,44 @@
 \addcontentsline{toc}{chapter}{Introduction}
 \chapter*{Introduction}
 
-The purpose of the introduction is to inform the reader/evaluator about the content and the general objectives of the paper.
-In this part of the paper, the following aspects should be covered:
+The studied domain of this project sits at the intersection of programming language design 
+and educational technology, specifically focused on the use of domain-specific languages as 
+tools for teaching computational thinking to children. As digital literacy becomes an 
+increasingly essential skill, the question of how to introduce programming concepts to young 
+learners in an engaging and effective way has attracted significant research attention across 
+both computer science and pedagogy.
 
-\begin{itemize}
-    \hitem Studied domain,
-    \hitem Motivation for choosing the topic,
-    \hitem Degree of novelty / relevance of the topic or of the problem,
-    \hitem General objectives of the project,
-    \hitem Research methodologies that have been used,
-    \hitem A brief sneak peek to the content of the subsequent chapters.
-\end{itemize}
+The motivation for this project stems from a clear gap in the existing landscape of 
+educational programming tools. Block-based environments such as Scratch successfully lower 
+the entry barrier but create a problematic disconnect from real text-based programming, 
+making the eventual transition to languages like Python or Java unnecessarily abrupt. On the 
+other end of the spectrum, tools that operate within Minecraft --- a game already deeply 
+familiar to the target age group --- such as ComputerCraft, impose technical complexity far 
+beyond what a beginner can reasonably handle. CodeCraft was conceived to occupy the space 
+between these two extremes: a text-based language simple enough for a ten-year-old, yet 
+grounded in real programming syntax and capable of producing immediate, visible results 
+inside a game children already care about.
 
-The volume of the introduction usually is about 2-3 pages.
+The relevance of the topic is supported by a growing body of empirical research demonstrating 
+that game-based, visually immediate programming environments significantly improve motivation 
+and computational thinking outcomes among young learners. Minecraft in particular has seen 
+documented adoption across primary and secondary education in over one hundred countries, yet 
+accessible programmatic scripting tools tailored to novice children remain scarce, making 
+this a timely and practical contribution.
+
+The general objectives of the project are threefold: to design a domain-specific language 
+suited to children aged 10--15 with no prior programming experience, to define its formal 
+grammar and core language constructs, and to implement the foundational components of its 
+toolchain, namely the lexer and parser.
+
+The research methodology combined a structured literature review of educational technology, 
+programming pedagogy, and DSL design with an empirical-informed design process, drawing on 
+studies covering learning curves across programming paradigms, identifier readability, and 
+common beginner mistakes to justify each design decision.
+
+The report is organized into two main chapters. Chapter 1 presents the domain analysis, 
+covering the educational context, a critical examination of existing tools, their 
+shortcomings, the proposed solution and its use case scenarios, and a profile of the target 
+users and stakeholders. Chapter 2 addresses the language design, detailing the DSL 
+requirements, the formal BNF grammar, and the implementation of the lexer and parser 
+components. The report concludes with a summary of outcomes and directions for future work.

@@ -1,4 +1,23 @@
 \addcontentsline{toc}{chapter}{Conclusions}
 \chapter*{Conclusions}
 
-Here go your conclusions..
+This project set out to design and partially implement CodeCraft, a domain-specific language for teaching programming to children aged 10–15 through the Minecraft game environment. 
+The work completed across the two main chapters demonstrates that the goal is both technically feasible and educationally grounded.
+
+The domain analysis established a clear motivation for the project. 
+Existing tools either operate in abstract environments disconnected from children's interests, as is the case with Scratch, or impose technical barriers that are inappropriate for the target age group, as seen with ComputerCraft and raw Minecraft modding. 
+Research reviewed during the analysis confirms that game-based, immediately visual programming environments measurably improve engagement, motivation, and the acquisition of computational thinking skills. 
+Minecraft was identified as a particularly suitable host environment due to its existing adoption in formal education and its structural parallels to core programming concepts such as sequencing, iteration, and conditional logic.
+
+The language design chapter translated these findings into concrete technical decisions. 
+An imperative paradigm was selected for its low learning curve and alignment with sequential reasoning. 
+Python\-inspired syntax was adopted to minimize cognitive overhead, and snake\_case identifier conventions were chosen based on empirical evidence showing lower visual effort for novice readers. 
+The formal BNF grammar defines a coherent and complete language covering variables, two forms of iteration, conditionals, function calls, and comments. 
+The lexer and parser implementations were described in sufficient detail to establish the correctness of the tokenization strategy, indentation handling, and recursive descent parsing approach.
+
+Several limitations remain acknowledged. Installation still requires external assistance, the DSL is constrained to actions performable through the player character, and the current implementation covers lexing and parsing without yet including an interpreter or Minecraft integration layer. 
+These constitute natural directions for future work, specifically the development of an AST evaluator, a Minecraft plugin bridge, and a beginner-friendly editor with inline error feedback.
+
+Overall, CodeCraft demonstrates that a carefully scoped DSL can serve as a meaningful pedagogical bridge between block-based tools and general-purpose text languages, providing children with an entry point into real programming within a context they already value.
+
+The full source code for the project, including the lexer, parser, and grammar specifications, is available at: \cite{codecraft_github}.
