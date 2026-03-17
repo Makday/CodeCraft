@@ -1,5 +1,5 @@
 \documentclass{tum_report}
-
+\usepackage{pdfpages}
 
 \bibliographystyle{tex_files/bibliography/styles/iso690} % downloaded from some chech uni
 
@@ -43,5 +43,11 @@
     \clearpage
     \appendix
     \input{tex_files/appendix/grammar}
+    \chapter{Team Contract} 
+    \label{appendix:contract}
+    This appendix contains the signed team contract agreed upon at the 
+    start of the project.
+    \includepdf[pages=-]{tex_files/appendix/TeamContractSigned.pdf}
+
 
 \end{document}
