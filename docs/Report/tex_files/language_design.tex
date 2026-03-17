@@ -63,13 +63,30 @@ Each line concludes with an explicit \texttt{NEWLINE} token. At the end of the s
 
 \section{Parser Implementation}
 
-The parser consumes the token sequence produced by the lexer and constructs an Abstract Syntax Tree (AST). 
-It is implemented as a hand-written recursive descent parser, where each grammar rule corresponds directly to a parsing method.
+The parser consumes the flat token sequence produced by the lexer and constructs an Abstract Syntax Tree (AST), which represents the hierarchical structure of the program. It is implemented as a hand-written recursive descent parser, where each grammar rule corresponds directly to a parsing method.
 
-The parser maintains a cursor over the token list, advancing through it with \texttt{expect()}, which asserts the current token type and throws a \texttt{ParseException} with the line and column number if the assertion fails.
+\subsection{Token Navigation}
 
-When the current token is an identifier, a one-token lookahead disambiguates between an assignment and a function call statement. The two forms of \texttt{for} loop are similarly disambiguated by checking whether the identifier after \texttt{for} is followed by the \texttt{from} keyword.
+The parser maintains a cursor over the token list and exposes three core navigation primitives. The \texttt{advance()} method moves the cursor forward and returns the new current token. The \texttt{check()} method tests whether the current token matches a given type without consuming it. The \texttt{expect()} method asserts that the current token has a specific type, consumes it, and throws a \texttt{ParseException} with a descriptive message including the line and column number if the assertion fails. A \texttt{peek()} method allows looking ahead by an arbitrary offset, which is used for disambiguation without side effects.
 
-Expression parsing uses a two-level recursive descent encoding operator precedence: \texttt{parseExpression()} handles additive operators, \texttt{parseTerm()} handles multiplicative operators, and \texttt{parseFactor()} handles the base cases. Conditions are parsed separately, supporting negation, comparison operators, and bare identifiers or function calls used as boolean predicates.
+\subsection{Statement Parsing and Disambiguation}
 
-All syntax errors are reported as a \texttt{ParseException} carrying the offending token, its literal value, and its position in the source.
+The top-level entry point, \texttt{parseProgram()}, skips any leading newlines and delegates to \texttt{parseStatementList()}, which iterates until an \texttt{EOF} or, when parsing inside a block, a \texttt{DEDENT} token is encountered.
+
+Individual statements are dispatched in \texttt{parseStatement()} based on the type of the current token. Control flow keywords (\texttt{for}, \texttt{while}, \texttt{if}) are routed directly to their respective parsing methods. When the current token is an identifier, a one-token lookahead is used to disambiguate between an assignment, where the next token is \texttt{=}, and a function call statement, where the next token is \texttt{(}. Any identifier-headed expression that resolves to something other than a function call is rejected with a parse error, enforcing the grammar's restriction that bare expressions are not valid statements.
+
+\subsection{Control Flow Constructs}
+
+The two forms of \texttt{for} loop are disambiguated after consuming the \texttt{for} keyword by checking whether the next token is an identifier followed by the \texttt{from} keyword. If so, a range loop is parsed; otherwise, a count loop is assumed. Both forms conclude by parsing an indented block via \texttt{parseBlock()}, which expects an \texttt{INDENT} token, recursively parses a statement list, and then expects a \texttt{DEDENT} token. The \texttt{if} statement optionally parses an \texttt{else} branch by checking for the \texttt{else} keyword after the then-block, with intervening newlines skipped.
+
+\subsection{Expression and Condition Parsing}
+
+Expressions are parsed using a standard two-level recursive descent that naturally encodes operator precedence. The \texttt{parseExpression()} method handles additive operators by parsing a \texttt{parseTerm()} and then consuming any sequence of \texttt{+} or \texttt{-} operators followed by additional terms, constructing left-associative \texttt{BinaryOp} nodes. The \texttt{parseTerm()} method handles multiplicative operators in the same manner, and \texttt{parseFactor()} handles the base cases: numeric, string, and boolean literals; parenthesised expressions; unary negation; and identifier-headed constructs.
+
+When an identifier is encountered in \texttt{parseFactor()}, a further one-token lookahead determines whether it begins a function call (\texttt{IDENT} followed by \texttt{(}), a dot-notation special object access (\texttt{IDENT} followed by \texttt{.}), or a plain variable reference.
+
+Conditions are parsed separately from expressions. The \texttt{parseCondition()} method first checks for a \texttt{not} keyword, in which case it recursively parses a negated condition. Otherwise, it parses a left-hand expression and checks whether the current token is a comparison operator. If so, a \texttt{ComparisonCondition} node is produced; if not, the expression itself is wrapped in a \texttt{BooleanCondition}, supporting the use of bare identifiers and function calls as boolean predicates.
+
+\subsection{Error Handling}
+
+All syntax errors are reported by throwing a \texttt{ParseException}, an unchecked exception that carries a human-readable message including the offending token type, its literal value where applicable, and its line and column position. This ensures that error messages are actionable for the learner rather than presenting raw internal state.
