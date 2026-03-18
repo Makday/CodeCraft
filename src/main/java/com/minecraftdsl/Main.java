@@ -2,10 +2,21 @@ package com.minecraftdsl;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Whatever");
-        TokenType tp = Keywords.lookup("for");
-        System.out.println(tp.toString());
+        String src = """
+                -- User text something.
+                for i from 1 to 5
+                \tlog("hello")
+                while x > 0
+                 x = x - 1
+                 y =0
+                 if j < 3
+                   t =3
+                   p=0
+                done = true
+                """;
 
-        //just a template for future finished program
+        Lexer lexer = new Lexer(src);
+        Parser parser = new Parser(lexer.tokenize());
+        System.out.println(parser.parseProgram());
     }
 }
