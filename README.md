@@ -1,11 +1,48 @@
-### To run the project on windows:
+<div align="center">
+  <img src="./logo_name.svg" alt="CodeCraft" width="480"/>
+</div>
+
+## About
+
+**CodeCraft** is a DSL (domain-specific language) that lets you script and automate actions in Minecraft. Developed by students of Software Engineering at the Technical University of Moldova:
+
+- Chiril Boboc
+- Vasile Brînză
+- Cristian Bruma
+- Gabriela Bîtca
+- Teodor Strulea
+
+## Repository Structure
+
 ```
+codecraft/
+├── src/                  # Maven standard layout (main & test sources)
+├── docs/
+│   ├── week_1/           # Progress reports by week
+│   ├── week_2/
+│   └── ...
+│   └── week_x/
+│   └── Report/           # LaTeX source + compiled PDF report              
+└── pom.xml
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Java (version 17 or higher)
+- Maven (or use the included wrapper)
+
+### Running the Project
+
+**Windows:**
+```bash
 mvnw clean compile exec:java
 ```
 
-### To run the project on Mac:
-```
+**macOS / Linux:**
+```bash
 ./mvnw clean compile exec:java
 ```
 
-### The commands from above will run the Main class of the project.
+This compiles the project and runs the `Main` class.
