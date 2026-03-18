@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./logo_name.svg" alt="CodeCraft" width="480"/>
+  <img src="./logo_name.svg" alt="CodeCraft" width="600"/>
 </div>
 
 ## About
