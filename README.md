@@ -1,16 +1,16 @@
 <div align="center">
-  <img src="./logo_name.svg" alt="CodeCraft" width="480"/>
+  <img src="./logo_name.svg" alt="CodeCraft" width="600"/>
 </div>
 
 ## About
 
 **CodeCraft** is a DSL (domain-specific language) that lets you script and automate actions in Minecraft. Developed by students of Software Engineering at the Technical University of Moldova:
 
-- Chiril Boboc
-- Vasile Brînză
-- Cristian Bruma
-- Gabriela Bîtca
-- Teodor Strulea
+- Chiril Boboc — [@KyronPomidor](https://github.com/KyronPomidor)
+- Vasile Brînză — [@Kynexi](https://github.com/Kynexi)
+- Cristian Bruma — [@Makday](https://github.com/Makday)
+- Gabriela Bîtca — [@gabr1ela0](https://github.com/gabr1ela0)
+- Teodor Strulea — [@Strulea-Teodor](https://github.com/Strulea-Teodor)
 
 ## Repository Structure
 
