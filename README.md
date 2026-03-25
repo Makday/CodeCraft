@@ -23,6 +23,7 @@ codecraft/
 │   └── ...
 │   └── week_x/
 │   └── Report/           # LaTeX source + compiled PDF report              
+|   └── code_examples/    # Examples of the code written in the DSL
 └── pom.xml
 ```
 
