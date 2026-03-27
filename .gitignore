@@ -55,3 +55,6 @@ build/
 
 # Ignore Gradle build output directory
 build
+
+# Ignore Fabric loom minecraft client logs
+run/
