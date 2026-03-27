@@ -1,5 +1,8 @@
 package com.utm.elsd.codecraft;
 
+import com.utm.elsd.codecraft.dsl.lexer.Lexer;
+import com.utm.elsd.codecraft.dsl.parser.Parser;
+
 public class Main {
     public static void main(String[] args) {
         String src = """

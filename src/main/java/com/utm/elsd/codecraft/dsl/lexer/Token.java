@@ -1,4 +1,4 @@
-package com.utm.elsd.codecraft;
+package com.utm.elsd.codecraft.dsl.lexer;
 
 public class Token {
     public final TokenType type;
