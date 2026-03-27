@@ -1,4 +1,4 @@
-package com.minecraftdsl;
+package com.utm.elsd.codecraft;
 
 public class Main {
     public static void main(String[] args) {

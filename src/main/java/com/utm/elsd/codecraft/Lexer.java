@@ -1,4 +1,4 @@
-package com.minecraftdsl;
+package com.utm.elsd.codecraft;
 
 import java.util.*;
 import java.util.regex.Pattern;
