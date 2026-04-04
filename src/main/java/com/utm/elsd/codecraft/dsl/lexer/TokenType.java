@@ -1,4 +1,4 @@
-package com.minecraftdsl;
+package com.utm.elsd.codecraft.dsl.lexer;
 
 public enum TokenType {
 

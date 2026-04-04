@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "codecraft",
+  "version": "${version}",
+  "name": "CodeCraft",
+  "description": "A DSL for scripting actions in minecraft",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.utm.elsd.codecraft.CodeCraft"],
+    "client": ["com.utm.elsd.codecraft.CodeCraftClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.5",
+    "minecraft": "~1.21.6",
+    "java": ">=21"
+  }
+}

@@ -1,4 +1,4 @@
-package com.minecraftdsl;
+package com.utm.elsd.codecraft.dsl.lexer;
 
 import java.util.*;
 import java.util.regex.Pattern;

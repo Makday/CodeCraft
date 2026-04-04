@@ -1,4 +1,8 @@
-package com.minecraftdsl;
+package com.utm.elsd.codecraft.dsl.parser;
+
+import com.utm.elsd.codecraft.dsl.ast.ASTNode;
+import com.utm.elsd.codecraft.dsl.lexer.Token;
+import com.utm.elsd.codecraft.dsl.lexer.TokenType;
 
 import java.util.ArrayList;
 import java.util.List;
