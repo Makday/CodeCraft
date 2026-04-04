@@ -31,19 +31,28 @@ codecraft/
 
 ### Prerequisites
 
-- Java (version 17 or higher)
-- Maven (or use the included wrapper)
+- JDK (version 21 or higher)
 
 ### Running the Project
 
 **Windows:**
+
 ```bash
-mvnw clean compile exec:java
+gradlew runClient
 ```
 
 **macOS / Linux:**
 ```bash
-./mvnw clean compile exec:java
+./gradlew runClient
 ```
 
-This compiles the project and runs the `Main` class.
+### Building the Project
+
+```bash
+gradlew build
+```
+
+**macOS / Linux:**
+```bash
+./gradlew build
+```
