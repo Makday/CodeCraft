@@ -1,6 +1,7 @@
 package com.utm.elsd.codecraft.api;
 
 import com.utm.elsd.codecraft.context.MinecraftContext;
+import com.utm.elsd.codecraft.implementation.movement.MovementActions;
 
 /**
  * Executes GameActions and manages their lifecycle.
@@ -56,9 +57,15 @@ public class GameActionExecutor {
      * @param params The parameters
      * @return The created GameAction, or null if function is unknown
      */
-    private GameAction createAction(String functionName, Object[] params) {
-        // This will be implemented when we create the Minecraft action classes
-        // For now, return null to indicate unknown function
-        return null;
+    public GameAction createAction(String functionName, Object... params) {
+        switch (functionName) {
+            case "move_forward":
+                if (params.length == 1 && params[0] instanceof Integer) {
+                    return MovementActions.moveForward((Integer) params[0]);
+                }
+                break;
+            // add more cases here as we implement other actions
+        }
+        return null; // unknown function
     }
 }
