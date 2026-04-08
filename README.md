@@ -48,6 +48,8 @@ gradlew runClient
 
 ### Building the Project
 
+**Windows:**
+
 ```bash
 gradlew build
 ```
