@@ -46,7 +46,13 @@ public class DropItemAction implements GameAction {
             return GameActionResult.failure("No item at slot (row=" + row + ", col=" + col + ")");
         }
 
-        return GameActionResult.failure("Not implemented yet");
+        MinecraftClient client = MinecraftClient.getInstance();
+        int syncId = context.player().playerScreenHandler.syncId;
+
+        // SlotActionType.THROW + button 1 = drop the entire stack
+        client.interactionManager.clickSlot(syncId, screenSlot, 1, SlotActionType.THROW, context.player());
+
+        return GameActionResult.success();
     }
 
     /**
