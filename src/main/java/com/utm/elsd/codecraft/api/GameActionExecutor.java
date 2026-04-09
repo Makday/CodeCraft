@@ -2,6 +2,7 @@ package com.utm.elsd.codecraft.api;
 
 import com.utm.elsd.codecraft.context.MinecraftContext;
 import com.utm.elsd.codecraft.implementation.movement.MovementActions;
+import com.utm.elsd.codecraft.implementation.inventory.InventoryActions;
 
 /**
  * Executes GameActions and manages their lifecycle.
@@ -64,7 +65,11 @@ public class GameActionExecutor {
                     return MovementActions.moveForward((Integer) params[0]);
                 }
                 break;
-            // add more cases here as we implement other actions
+            case "drop_item":
+                if (params.length == 2 && params[0] instanceof Integer && params[1] instanceof Integer) {
+                    return InventoryActions.dropItem((Integer) params[0], (Integer) params[1]);
+                }
+                break;
         }
         return null; // unknown function
     }
