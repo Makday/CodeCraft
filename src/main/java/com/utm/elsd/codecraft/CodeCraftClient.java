@@ -26,6 +26,29 @@ public class CodeCraftClient implements ClientModInitializer {
                             })
                     )
             );
+
+            // /testinventory open
+            // /testinventory close
+            dispatcher.register(ClientCommandManager.literal("testinventory")
+                    .then(ClientCommandManager.literal("open")
+                            .executes(context -> {
+                                var result = actionExecutor.executeAction("open_inventory");
+                                context.getSource().sendFeedback(
+                                        Text.literal("open_inventory(): " + result.toString())
+                                );
+                                return 1;
+                            })
+                    )
+                    .then(ClientCommandManager.literal("close")
+                            .executes(context -> {
+                                var result = actionExecutor.executeAction("close_inventory");
+                                context.getSource().sendFeedback(
+                                        Text.literal("close_inventory(): " + result.toString())
+                                );
+                                return 1;
+                            })
+                    )
+            );
         });
     }
 }
