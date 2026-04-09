@@ -41,9 +41,25 @@ public class DropItemAction implements GameAction {
         }
 
         int screenSlot = calculateScreenSlot(row, col);
+        ItemStack stack = context.player().playerScreenHandler.getSlot(screenSlot).getStack();
+        if (stack.isEmpty()) {
+            return GameActionResult.failure("No item at slot (row=" + row + ", col=" + col + ")");
+        }
 
         return GameActionResult.failure("Not implemented yet");
     }
+
+    /**
+     * Maps (row, col) to the slot index used by PlayerScreenHandler.
+     *
+     * PlayerScreenHandler layout:
+     *   0        – crafting output
+     *   1–4      – crafting grid
+     *   5–8      – armor
+     *   9–35     – main inventory (rows 0–2, left-to-right, top-to-bottom)
+     *   36–44    – hotbar (row 3)
+     *   45       – off-hand
+     */
 
     private int calculateScreenSlot(int row, int col) {
         if (row == 3) {
