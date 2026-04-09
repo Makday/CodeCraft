@@ -6,6 +6,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.minecraft.text.Text;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 public class CodeCraftClient implements ClientModInitializer {
     // game action executor for testing DSL actions
@@ -24,6 +25,18 @@ public class CodeCraftClient implements ClientModInitializer {
                                 );
                                 return 1;
                             })
+                    )
+                    .then(ClientCommandManager.literal("toolbar")
+                            .then(ClientCommandManager.argument("slot", IntegerArgumentType.integer(0, 8))
+                                    .executes(context -> {
+                                        int slot = IntegerArgumentType.getInteger(context, "slot");
+                                        var result = actionExecutor.executeAction("tool_bar", slot);
+                                        context.getSource().sendFeedback(
+                                                Text.literal("tool_bar(" + slot + "): " + result.toString())
+                                        );
+                                        return 1;
+                                    })
+                            )
                     )
             );
         });

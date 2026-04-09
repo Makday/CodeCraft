@@ -64,6 +64,11 @@ public class GameActionExecutor {
                     return MovementActions.moveForward((Integer) params[0]);
                 }
                 break;
+            case "tool_bar":
+                if (params.length == 1 && params[0] instanceof Integer) {
+                    return com.utm.elsd.codecraft.implementation.inventory.InventoryActions.toolBar((Integer) params[0]);
+                }
+                break;
             // add more cases here as we implement other actions
         }
         return null; // unknown function

@@ -56,4 +56,37 @@ public class MinecraftContext {
     public boolean isAvailable() {
         return player() != null && world() != null;
     }
+
+    /**
+     * Gets the currently selected hotbar slot (0-8) from the player's inventory.
+     * Uses reflection because the underlying field may be private in some mappings.
+     */
+    public int getSelectedHotbarSlot() {
+        ClientPlayerEntity player = player();
+        if (player == null) return 0;
+        try {
+            java.lang.reflect.Field f = player.getInventory().getClass().getDeclaredField("selectedSlot");
+            f.setAccessible(true);
+            return f.getInt(player.getInventory());
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Sets the currently selected hotbar slot (clamped to 0-8).
+     * Uses reflection because the underlying field may be private in some mappings.
+     */
+    public void setSelectedHotbarSlot(int slot) {
+        ClientPlayerEntity player = player();
+        if (player == null) return;
+        int clamped = Math.max(0, Math.min(8, slot));
+        try {
+            java.lang.reflect.Field f = player.getInventory().getClass().getDeclaredField("selectedSlot");
+            f.setAccessible(true);
+            f.setInt(player.getInventory(), clamped);
+        } catch (Exception e) {
+            // ignore
+        }
+    }
 }
