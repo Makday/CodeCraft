@@ -18,7 +18,6 @@ import net.minecraft.screen.slot.SlotActionType;
  *
  * col is 0–8 in all rows.
  */
-
 public class DropItemAction implements GameAction {
 
     private final int row;
@@ -37,10 +36,11 @@ public class DropItemAction implements GameAction {
 
         if (row < 0 || row > 3 || col < 0 || col > 8) {
             return GameActionResult.failure(
-                    "Invalid slot: row=" + row + ", col=" + col);
+                    "Invalid slot: row=" + row + ", col=" + col + " (row must be 0–3, col must be 0–8)");
         }
 
         int screenSlot = calculateScreenSlot(row, col);
+
         ItemStack stack = context.player().playerScreenHandler.getSlot(screenSlot).getStack();
         if (stack.isEmpty()) {
             return GameActionResult.failure("No item at slot (row=" + row + ", col=" + col + ")");
@@ -66,11 +66,10 @@ public class DropItemAction implements GameAction {
      *   36–44    – hotbar (row 3)
      *   45       – off-hand
      */
-
     private int calculateScreenSlot(int row, int col) {
         if (row == 3) {
-            return 36 + col;
+            return 36 + col; // hotbar
         }
-        return 9 + row * 9 + col;
+        return 9 + row * 9 + col; // main inventory
     }
 }
