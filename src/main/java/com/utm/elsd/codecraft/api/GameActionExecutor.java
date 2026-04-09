@@ -1,6 +1,7 @@
 package com.utm.elsd.codecraft.api;
 
 import com.utm.elsd.codecraft.context.MinecraftContext;
+import com.utm.elsd.codecraft.implementation.inventory.InventoryActions;
 import com.utm.elsd.codecraft.implementation.movement.MovementActions;
 
 /**
@@ -64,6 +65,13 @@ public class GameActionExecutor {
                     return MovementActions.moveForward((Integer) params[0]);
                 }
                 break;
+
+            case "open_inventory":
+                return InventoryActions.openInventory();
+
+            case "close_inventory":
+                return InventoryActions.closeInventory();
+
             // add more cases here as we implement other actions
         }
         return null; // unknown function
