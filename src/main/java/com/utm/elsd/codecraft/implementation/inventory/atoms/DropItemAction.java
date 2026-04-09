@@ -40,6 +40,15 @@ public class DropItemAction implements GameAction {
                     "Invalid slot: row=" + row + ", col=" + col);
         }
 
+        int screenSlot = calculateScreenSlot(row, col);
+
         return GameActionResult.failure("Not implemented yet");
+    }
+
+    private int calculateScreenSlot(int row, int col) {
+        if (row == 3) {
+            return 36 + col;
+        }
+        return 9 + row * 9 + col;
     }
 }
