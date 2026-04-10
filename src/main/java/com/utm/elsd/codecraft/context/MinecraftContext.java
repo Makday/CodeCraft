@@ -63,14 +63,8 @@ public class MinecraftContext {
      */
     public int getSelectedHotbarSlot() {
         ClientPlayerEntity player = player();
-        if (player == null) return 0;
-        try {
-            java.lang.reflect.Field f = player.getInventory().getClass().getDeclaredField("selectedSlot");
-            f.setAccessible(true);
-            return f.getInt(player.getInventory());
-        } catch (Exception e) {
-            return 0;
-        }
+        if (player == null) throw new IllegalStateException("Player is not available");
+        return player.getInventory().getSelectedSlot();
     }
 
     /**
@@ -80,13 +74,6 @@ public class MinecraftContext {
     public void setSelectedHotbarSlot(int slot) {
         ClientPlayerEntity player = player();
         if (player == null) return;
-        int clamped = Math.max(0, Math.min(8, slot));
-        try {
-            java.lang.reflect.Field f = player.getInventory().getClass().getDeclaredField("selectedSlot");
-            f.setAccessible(true);
-            f.setInt(player.getInventory(), clamped);
-        } catch (Exception e) {
-            // ignore
-        }
+        player.getInventory().setSelectedSlot(slot);
     }
 }

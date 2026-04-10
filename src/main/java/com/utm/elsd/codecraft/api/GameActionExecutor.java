@@ -2,6 +2,7 @@ package com.utm.elsd.codecraft.api;
 
 import com.utm.elsd.codecraft.context.MinecraftContext;
 import com.utm.elsd.codecraft.implementation.movement.MovementActions;
+import com.utm.elsd.codecraft.implementation.inventory.InventoryActions;
 
 /**
  * Executes GameActions and manages their lifecycle.
@@ -66,7 +67,7 @@ public class GameActionExecutor {
                 break;
             case "tool_bar":
                 if (params.length == 1 && params[0] instanceof Integer) {
-                    return com.utm.elsd.codecraft.implementation.inventory.InventoryActions.toolBar((Integer) params[0]);
+                    return InventoryActions.toolBar((Integer) params[0]);
                 }
                 break;
             // add more cases here as we implement other actions
