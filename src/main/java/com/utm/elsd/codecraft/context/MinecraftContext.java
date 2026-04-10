@@ -64,7 +64,13 @@ public class MinecraftContext {
     }
 
     public boolean isScreenOpen() {
-        return client().currentScreen != null;
+        return client() != null
+                && client().currentScreen != null
+                && !(client().currentScreen instanceof net.minecraft.client.gui.screen.ChatScreen);
+    }
+
+    public boolean isInventoryScreenOpen() {
+        return client().currentScreen instanceof InventoryScreen;
     }
 
     public void setScreen(Screen screen) {

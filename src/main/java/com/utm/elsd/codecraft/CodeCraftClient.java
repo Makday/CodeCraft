@@ -50,20 +50,10 @@ public class CodeCraftClient implements ClientModInitializer {
                                 return 1;
                             })
                     )
-                    .then(ClientCommandManager.literal("test")
-                            .executes(context -> {
-                                InventoryActions.openInventory().execute(new MinecraftContext());
-                                for (int i = 0; i < 10000; i++) {
-                                }
-                                InventoryActions.closeInventory().execute(new MinecraftContext());
-
-                                return 1;
-                            })
-                    )
             );
 
-            // /testinventory
-            dispatcher.register(ClientCommandManager.literal("testinventory")
+            // /testfullinventory
+            dispatcher.register(ClientCommandManager.literal("testfullinventory")
                     .executes(context -> {
                         Thread thread = new Thread(() -> {
                             try {
