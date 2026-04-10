@@ -6,9 +6,6 @@ import com.utm.elsd.codecraft.implementation.inventory.atoms.OpenInventoryAction
 
 /**
  * Inventory-related actions for the DSL.
- *
- * Placeholder for future implementations such as:
- * open_inventory, close_inventory, drop_item, move_item, tool_bar.
  */
 
 public class InventoryActions {
