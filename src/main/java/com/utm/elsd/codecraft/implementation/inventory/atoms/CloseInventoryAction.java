@@ -1,13 +1,15 @@
 package com.utm.elsd.codecraft.implementation.inventory.atoms;
 
+import com.utm.elsd.codecraft.api.GameAction;
 import com.utm.elsd.codecraft.api.GameActionResult;
 import com.utm.elsd.codecraft.context.MinecraftContext;
 
-public class CloseInventoryAction extends InventoryAction {
+public class CloseInventoryAction implements GameAction {
 
     @Override
-    protected GameActionResult<Void> executeInventoryAction(MinecraftContext context) {
-        if (!context.isInventoryOpen()) {
+    public GameActionResult<Void> execute(MinecraftContext context) {
+
+        if (!context.isScreenOpen()) {
             return GameActionResult.failure("Already closed.");
         }
 

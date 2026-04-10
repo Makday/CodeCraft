@@ -67,10 +67,6 @@ public class MinecraftContext {
         return client().currentScreen != null;
     }
 
-    public boolean isInventoryOpen() {
-        return client().currentScreen instanceof InventoryScreen;
-    }
-
     public void setScreen(Screen screen) {
         client().send(() -> client().setScreen(screen));
     }
