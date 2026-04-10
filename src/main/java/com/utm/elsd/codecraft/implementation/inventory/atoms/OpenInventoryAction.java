@@ -9,8 +9,8 @@ public class OpenInventoryAction implements GameAction {
 
     @Override
     public GameActionResult<Void> execute(MinecraftContext context) {
-        if (context.isInventoryScreenOpen()) {
-            return GameActionResult.failure("Inventory is already open.");
+        if (context.isScreenOpen()) {
+            return GameActionResult.failure("A window is open.");
         }
         context.setScreen(new InventoryScreen(context.player()));
         return GameActionResult.success();
