@@ -81,6 +81,8 @@ public class MinecraftContext {
         ClientPlayerEntity player = player();
         if (player == null) return;
         player.getInventory().setSelectedSlot(slot);
+    }
+
     public boolean isScreenOpen() {
         return client() != null
                 && client().currentScreen != null

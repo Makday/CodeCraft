@@ -26,7 +26,6 @@ public class InventoryActions {
     public static GameAction toolBar(int slot) {
         return new ToolBarAction(slot);
     }
-}
 
     /**
      * Creates an action that closes the player's inventory screen.
