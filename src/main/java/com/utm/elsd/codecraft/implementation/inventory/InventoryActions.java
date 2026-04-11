@@ -5,6 +5,7 @@ import com.utm.elsd.codecraft.implementation.inventory.atoms.DropItemAction;
 import com.utm.elsd.codecraft.implementation.inventory.atoms.ToolBarAction;
 import com.utm.elsd.codecraft.implementation.inventory.atoms.CloseInventoryAction;
 import com.utm.elsd.codecraft.implementation.inventory.atoms.OpenInventoryAction;
+import com.utm.elsd.codecraft.implementation.inventory.atoms.MoveItemAction;
 
 /**
  * Inventory-related actions for the DSL.
@@ -46,6 +47,19 @@ public class InventoryActions {
      */
     public static GameAction toolBar(int slot) {
         return new ToolBarAction(slot);
+    }
+
+    /**
+     * Creates an action that moves an item from one inventory slot to another.
+     *
+     * @param fromRow The row of the source slot (0-3)
+     * @param fromCol The column of the source slot (0-8)
+     * @param toRow The row of the destination slot (0-3)
+     * @param toCol The column of the destination slot (0-8)
+     * @return A GameAction that will execute the item move
+     */
+    public static GameAction moveItem(int fromRow, int fromCol, int toRow, int toCol) {
+        return new MoveItemAction(fromRow, fromCol, toRow, toCol);
     }
 
 }

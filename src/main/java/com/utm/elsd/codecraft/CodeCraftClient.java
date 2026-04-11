@@ -46,11 +46,27 @@ public class CodeCraftClient implements ClientModInitializer {
                                     )
                             )
                     )
-            );
-          
-            // /testinventory open
-            // /testinventory close
-            dispatcher.register(ClientCommandManager.literal("testinventory")
+                    .then(ClientCommandManager.literal("move")
+                            .then(ClientCommandManager.argument("fromRow", IntegerArgumentType.integer(0, 3))
+                                    .then(ClientCommandManager.argument("fromCol", IntegerArgumentType.integer(0, 8))
+                                            .then(ClientCommandManager.argument("toRow", IntegerArgumentType.integer(0, 3))
+                                                    .then(ClientCommandManager.argument("toCol", IntegerArgumentType.integer(0, 8))
+                                                            .executes(context -> {
+                                                                int fromRow = IntegerArgumentType.getInteger(context, "fromRow");
+                                                                int fromCol = IntegerArgumentType.getInteger(context, "fromCol");
+                                                                int toRow = IntegerArgumentType.getInteger(context, "toRow");
+                                                                int toCol = IntegerArgumentType.getInteger(context, "toCol");
+                                                                var result = actionExecutor.executeAction("move_item", fromRow, fromCol, toRow, toCol);
+                                                                context.getSource().sendFeedback(
+                                                                        Text.literal("move_item(" + fromRow + ", " + fromCol + ", " + toRow + ", " + toCol + "): " + result.toString())
+                                                                );
+                                                                return 1;
+                                                            })
+                                                    )
+                                            )
+                                    )
+                            )
+                    )
                     .then(ClientCommandManager.literal("open")
                             .executes(context -> {
                                 var result = actionExecutor.executeAction("open_inventory");
