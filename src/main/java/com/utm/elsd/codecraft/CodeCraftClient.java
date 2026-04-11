@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.text.Text;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 public class CodeCraftClient implements ClientModInitializer {
     // game action executor for testing DSL actions
@@ -29,6 +30,24 @@ public class CodeCraftClient implements ClientModInitializer {
                     )
             );
 
+            dispatcher.register(ClientCommandManager.literal("testinventory")
+                    .then(ClientCommandManager.literal("drop")
+                            .then(ClientCommandManager.argument("row", IntegerArgumentType.integer(0, 3))
+                                    .then(ClientCommandManager.argument("col", IntegerArgumentType.integer(0, 8))
+                                            .executes(context -> {
+                                                int row = IntegerArgumentType.getInteger(context, "row");
+                                                int col = IntegerArgumentType.getInteger(context, "col");
+                                                var result = actionExecutor.executeAction("drop_item", row, col);
+                                                context.getSource().sendFeedback(
+                                                        Text.literal("drop_item(" + row + ", " + col + "): " + result.toString())
+                                                );
+                                                return 1;
+                                            })
+                                    )
+                            )
+                    )
+            );
+          
             // /testinventory open
             // /testinventory close
             dispatcher.register(ClientCommandManager.literal("testinventory")
