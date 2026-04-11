@@ -63,6 +63,24 @@ public class MinecraftContext {
         return player() != null && world() != null;
     }
 
+    /**
+     * Gets the currently selected hotbar slot (0-8) from the player's inventory.
+     * Uses reflection because the underlying field may be private in some mappings.
+     */
+    public int getSelectedHotbarSlot() {
+        ClientPlayerEntity player = player();
+        if (player == null) throw new IllegalStateException("Player is not available");
+        return player.getInventory().getSelectedSlot();
+    }
+
+    /**
+     * Sets the currently selected hotbar slot (clamped to 0-8).
+     * Uses reflection because the underlying field may be private in some mappings.
+     */
+    public void setSelectedHotbarSlot(int slot) {
+        ClientPlayerEntity player = player();
+        if (player == null) return;
+        player.getInventory().setSelectedSlot(slot);
     public boolean isScreenOpen() {
         return client() != null
                 && client().currentScreen != null
