@@ -21,7 +21,7 @@ public class InventoryActions {
     public static GameAction openInventory() {
         return new OpenInventoryAction();
     }
-  
+
     /**
      * Creates an action that closes the player's inventory screen.
      *
@@ -30,7 +30,7 @@ public class InventoryActions {
     public static GameAction closeInventory() {
         return new CloseInventoryAction();
     }
-  
+
     /**
      * Creates an action that drops the entire item stack from inventory slot (row, col).
      *
@@ -41,7 +41,7 @@ public class InventoryActions {
     public static GameAction dropItem(int row, int col) {
         return new DropItemAction(row, col);
     }
-      
+
     /**
      * Selects the given hotbar slot (0-8).
      */
