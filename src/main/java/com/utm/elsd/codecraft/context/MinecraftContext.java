@@ -1,6 +1,8 @@
 package com.utm.elsd.codecraft.context;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.input.KeyboardInput;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -12,6 +14,10 @@ public class MinecraftContext {
 
     public ClientPlayerEntity player() {
         return MinecraftClient.getInstance().player;
+    }
+
+    public MinecraftClient client() {
+        return MinecraftClient.getInstance();
     }
 
     public World world() {
@@ -42,7 +48,7 @@ public class MinecraftContext {
     }
 
     public void restoreDefaultInput() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        MinecraftClient client = client();
         if (client.player != null) {
             client.player.input = new KeyboardInput(client.options);
         }
@@ -55,5 +61,39 @@ public class MinecraftContext {
 
     public boolean isAvailable() {
         return player() != null && world() != null;
+    }
+
+    /**
+     * Gets the currently selected hotbar slot (0-8) from the player's inventory.
+     * Uses reflection because the underlying field may be private in some mappings.
+     */
+    public int getSelectedHotbarSlot() {
+        ClientPlayerEntity player = player();
+        if (player == null) throw new IllegalStateException("Player is not available");
+        return player.getInventory().getSelectedSlot();
+    }
+
+    /**
+     * Sets the currently selected hotbar slot (clamped to 0-8).
+     * Uses reflection because the underlying field may be private in some mappings.
+     */
+    public void setSelectedHotbarSlot(int slot) {
+        ClientPlayerEntity player = player();
+        if (player == null) return;
+        player.getInventory().setSelectedSlot(slot);
+    }
+
+    public boolean isScreenOpen() {
+        return client() != null
+                && client().currentScreen != null
+                && !(client().currentScreen instanceof net.minecraft.client.gui.screen.ChatScreen);
+    }
+
+    public boolean isInventoryScreenOpen() {
+        return client().currentScreen instanceof InventoryScreen;
+    }
+
+    public void setScreen(Screen screen) {
+        client().send(() -> client().setScreen(screen));
     }
 }
