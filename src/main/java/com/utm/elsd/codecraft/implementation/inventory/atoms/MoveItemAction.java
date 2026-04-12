@@ -6,8 +6,6 @@ import com.utm.elsd.codecraft.context.MinecraftContext;
 import com.utm.elsd.codecraft.implementation.inventory.helper.InventoryHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 
 /**
@@ -35,10 +33,10 @@ public class MoveItemAction implements GameAction {
             return GameActionResult.failure("Minecraft context not available");
         }
 
-        if (!isValidSlot(fromRow, fromCol)) {
+        if (!InventoryHelper.isValidSlot(fromRow, fromCol)) {
             return GameActionResult.failure("Invalid 'from' slot: row " + fromRow + ", col " + fromCol);
         }
-        if (!isValidSlot(toRow, toCol)) {
+        if (!InventoryHelper.isValidSlot(toRow, toCol)) {
             return GameActionResult.failure("Invalid 'to' slot: row " + toRow + ", col " + toCol);
         }
 
@@ -75,7 +73,4 @@ public class MoveItemAction implements GameAction {
         return GameActionResult.success();
     }
 
-    private boolean isValidSlot(int row, int col) {
-        return row >= 0 && row <= 3 && col >= 0 && col <= 8;
-    }
 }

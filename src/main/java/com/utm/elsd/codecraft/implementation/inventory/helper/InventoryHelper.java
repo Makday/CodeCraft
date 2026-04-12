@@ -21,4 +21,8 @@ public final class InventoryHelper {
         }
         return 9 + row * 9 + col;
     }
+
+    public static boolean isValidSlot(int row, int col) {
+        return row >= 0 && row <= 3 && col >= 0 && col <= 8;
+    }
 }

@@ -35,7 +35,7 @@ public class DropItemAction implements GameAction {
             return GameActionResult.failure("Minecraft context not available");
         }
 
-        if (row < 0 || row > 3 || col < 0 || col > 8) {
+        if (!InventoryHelper.isValidSlot(row, col)) {
             return GameActionResult.failure(
                     "Invalid slot: row=" + row + ", col=" + col + " (row must be 0–3, col must be 0–8)");
         }
