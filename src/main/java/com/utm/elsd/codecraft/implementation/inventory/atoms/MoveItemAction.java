@@ -3,10 +3,8 @@ package com.utm.elsd.codecraft.implementation.inventory.atoms;
 import com.utm.elsd.codecraft.api.GameAction;
 import com.utm.elsd.codecraft.api.GameActionResult;
 import com.utm.elsd.codecraft.context.MinecraftContext;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.SlotActionType;
 
 /**
  * Moves an item from one inventory slot to another.
@@ -37,11 +35,6 @@ public class MoveItemAction implements GameAction {
 
         ticksRunning++;
 
-        // Ensure inventory screen is open
-        if (!context.isInventoryScreenOpen()) {
-            return GameActionResult.failure("Inventory screen is not open. Open it first with open_inventory()");
-        }
-
         // Validate slot coordinates
         if (!isValidSlot(fromRow, fromCol)) {
             return GameActionResult.failure("Invalid 'from' slot: row " + fromRow + ", col " + fromCol);
@@ -62,15 +55,11 @@ public class MoveItemAction implements GameAction {
     }
 
     /**
-     * Performs the inventory move operation by simulating clicks on the inventory screen.
+     * Performs the inventory move operation by directly manipulating the player's inventory.
+     * This moves an item from one slot to another by swapping their contents.
      */
     private GameActionResult<Void> performMove(MinecraftContext context) {
         try {
-            InventoryScreen screen = (InventoryScreen) context.client().currentScreen;
-            if (screen == null) {
-                return GameActionResult.failure("Inventory screen became unavailable");
-            }
-
             Inventory inventory = context.player().getInventory();
 
             // Convert grid coordinates to slot indices
@@ -83,34 +72,17 @@ public class MoveItemAction implements GameAction {
                 return GameActionResult.failure("Source slot is empty: row " + fromRow + ", col " + fromCol);
             }
 
-            // Perform the click sequence on the inventory screen
-            // First click on the source slot to pick it up
-            simulateInventoryClick(screen, fromSlot, false);
+            // Get the destination stack
+            ItemStack toStack = inventory.getStack(toSlot);
 
-            // Then click on the destination slot to place it
-            simulateInventoryClick(screen, toSlot, false);
+            // Perform the item move: swap the stacks
+            inventory.setStack(toSlot, fromStack.copy());
+            inventory.setStack(fromSlot, toStack.copy());
 
             return GameActionResult.success();
 
         } catch (Exception e) {
             return GameActionResult.failure("Failed to move item: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Simulates a click on an inventory slot via the InventoryScreen.
-     */
-    private void simulateInventoryClick(InventoryScreen screen, int slot, boolean shiftClick) {
-        // Use the screen's onMouseClick method to simulate clicking a slot
-        // The exact method signature depends on Minecraft version
-        // For Fabric/Minecraft 1.20+, we use the appropriate method
-        try {
-            // Use QUICK_MOVE (shift-click) for shift clicks, otherwise use PICKUP (normal click)
-            SlotActionType actionType = shiftClick ? SlotActionType.QUICK_MOVE : SlotActionType.PICKUP;
-            screen.onMouseClick(null, slot, 0, actionType);
-        } catch (Exception e) {
-            // Fallback: if onMouseClick doesn't exist, try alternative approach
-            // This is version-dependent and may need adjustment
         }
     }
 
