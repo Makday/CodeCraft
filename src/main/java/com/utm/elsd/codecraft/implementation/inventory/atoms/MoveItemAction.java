@@ -6,6 +6,7 @@ import com.utm.elsd.codecraft.context.MinecraftContext;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.slot.SlotActionType;
 
 /**
  * Moves an item from one inventory slot to another.
@@ -104,9 +105,9 @@ public class MoveItemAction implements GameAction {
         // The exact method signature depends on Minecraft version
         // For Fabric/Minecraft 1.20+, we use the appropriate method
         try {
-            // This will be handled by Minecraft's click event system
-            // We schedule the clicks with a small delay between them
-            screen.onMouseClick(null, slot, 0, shiftClick ? 1 : 0);
+            // Use QUICK_MOVE (shift-click) for shift clicks, otherwise use PICKUP (normal click)
+            SlotActionType actionType = shiftClick ? SlotActionType.QUICK_MOVE : SlotActionType.PICKUP;
+            screen.onMouseClick(null, slot, 0, actionType);
         } catch (Exception e) {
             // Fallback: if onMouseClick doesn't exist, try alternative approach
             // This is version-dependent and may need adjustment
