@@ -65,13 +65,13 @@ public class GameActionExecutor {
                     return MovementActions.moveForward((Integer) params[0]);
                 }
                 break;
-            
+
             case "drop_item":
                 if (params.length == 2 && params[0] instanceof Integer && params[1] instanceof Integer) {
                     return InventoryActions.dropItem((Integer) params[0], (Integer) params[1]);
                 }
                 break;
-            
+
             case "tool_bar":
                 if (params.length == 1 && params[0] instanceof Integer) {
                     return InventoryActions.toolBar((Integer) params[0]);
@@ -83,6 +83,14 @@ public class GameActionExecutor {
 
             case "close_inventory":
                 return InventoryActions.closeInventory();
+
+            case "move_item":
+                if (params.length == 4 && params[0] instanceof Integer && params[1] instanceof Integer
+                        && params[2] instanceof Integer && params[3] instanceof Integer) {
+                    return InventoryActions.moveItem((Integer) params[0], (Integer) params[1],
+                            (Integer) params[2], (Integer) params[3]);
+                }
+                break;
 
             // add more cases here as we implement other actions
         }

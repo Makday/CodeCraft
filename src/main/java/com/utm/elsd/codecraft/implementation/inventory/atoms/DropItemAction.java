@@ -6,6 +6,7 @@ import com.utm.elsd.codecraft.context.MinecraftContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
+import com.utm.elsd.codecraft.implementation.inventory.helper.InventoryHelper;
 
 /**
  * Drops the entire item stack from the inventory slot at (row, col).
@@ -34,12 +35,12 @@ public class DropItemAction implements GameAction {
             return GameActionResult.failure("Minecraft context not available");
         }
 
-        if (row < 0 || row > 3 || col < 0 || col > 8) {
+        if (!InventoryHelper.isValidSlot(row, col)) {
             return GameActionResult.failure(
                     "Invalid slot: row=" + row + ", col=" + col + " (row must be 0–3, col must be 0–8)");
         }
 
-        int screenSlot = calculateScreenSlot(row, col);
+        int screenSlot = InventoryHelper.calculateScreenSlot(row, col);
 
         ItemStack stack = context.player().playerScreenHandler.getSlot(screenSlot).getStack();
         if (stack.isEmpty()) {
@@ -53,23 +54,5 @@ public class DropItemAction implements GameAction {
         client.interactionManager.clickSlot(syncId, screenSlot, 1, SlotActionType.THROW, context.player());
 
         return GameActionResult.success();
-    }
-
-    /**
-     * Maps (row, col) to the slot index used by PlayerScreenHandler.
-     *
-     * PlayerScreenHandler layout:
-     *   0        – crafting output
-     *   1–4      – crafting grid
-     *   5–8      – armor
-     *   9–35     – main inventory (rows 0–2, left-to-right, top-to-bottom)
-     *   36–44    – hotbar (row 3)
-     *   45       – off-hand
-     */
-    private int calculateScreenSlot(int row, int col) {
-        if (row == 3) {
-            return 36 + col; // hotbar
-        }
-        return 9 + row * 9 + col; // main inventory
     }
 }
