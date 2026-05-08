@@ -1,8 +1,10 @@
 package com.utm.elsd.codecraft;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.utm.elsd.codecraft.api.ActionRunner;
 import com.utm.elsd.codecraft.api.ActionSequence;
 import com.utm.elsd.codecraft.context.MinecraftContext;
+import com.utm.elsd.codecraft.dsl.CodeReader;
 import com.utm.elsd.codecraft.implementation.inventory.atoms.CloseInventoryAction;
 import com.utm.elsd.codecraft.implementation.inventory.atoms.DropItemAction;
 import com.utm.elsd.codecraft.implementation.inventory.atoms.MoveItemAction;
@@ -14,12 +16,15 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import net.minecraft.text.Text;
 
 public class CodeCraftClient implements ClientModInitializer {
     private ActionRunner runner;
+    private CodeReader codeReader;
 
     @Override
     public void onInitializeClient() {
+        codeReader = new CodeReader("codecraft");
         runner = new ActionRunner(new MinecraftContext());
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> runner.tick());
@@ -92,6 +97,22 @@ public class CodeCraftClient implements ClientModInitializer {
                         );
                         return 1;
                     })
+            );
+            
+            dispatcher.register(ClientCommandManager.literal("execute")
+                    .then(ClientCommandManager.argument("FilePath", StringArgumentType.string())
+                            .executes(ctx -> {
+                                String filePath = StringArgumentType.getString(ctx, "FilePath");
+                                try {
+                                    String code = codeReader.read(filePath);
+                                    ctx.getSource().sendFeedback(Text.of("Reading " + filePath));
+                                    System.out.println(code);
+                                } catch (Exception e) {
+                                    ctx.getSource().sendError(Text.of("Error reading file: " + e.getMessage()));
+                                }
+                                return 1;
+                            })
+                    )
             );
 
         });
