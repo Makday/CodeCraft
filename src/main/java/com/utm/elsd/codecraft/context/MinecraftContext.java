@@ -64,8 +64,7 @@ public class MinecraftContext {
     }
 
     /**
-     * Gets the currently selected hotbar slot (0-8) from the player's inventory.
-     * Uses reflection because the underlying field may be private in some mappings.
+     * Gets the currently selected hotbar slot (in range 0-8) from the player's inventory.
      */
     public int getSelectedHotbarSlot() {
         ClientPlayerEntity player = player();
@@ -74,8 +73,7 @@ public class MinecraftContext {
     }
 
     /**
-     * Sets the currently selected hotbar slot (clamped to 0-8).
-     * Uses reflection because the underlying field may be private in some mappings.
+     * Sets the currently selected hotbar slot (in range 0-8).
      */
     public void setSelectedHotbarSlot(int slot) {
         ClientPlayerEntity player = player();
