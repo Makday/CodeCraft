@@ -5,6 +5,7 @@ import com.utm.elsd.codecraft.api.Action;
 import com.utm.elsd.codecraft.api.ActionRunner;
 import com.utm.elsd.codecraft.api.ActionSequence;
 import com.utm.elsd.codecraft.context.MinecraftContext;
+import com.utm.elsd.codecraft.implementation.movement.input.InputOverride;
 import com.utm.elsd.codecraft.dsl.CodeReader;
 import com.utm.elsd.codecraft.dsl.ast.ASTNode;
 import com.utm.elsd.codecraft.dsl.interpreter.Interpreter;
@@ -145,6 +146,18 @@ public class CodeCraftClient implements ClientModInitializer {
                                 return 1;
                             })
                     )
+            );
+
+            // Stops any currently running action sequence immediately and performs cleanup
+            dispatcher.register(ClientCommandManager.literal("stop")
+                    .executes(ctx -> {
+                        runner.cancel();
+                        // Release any forced movement inputs and restore default input handling
+                        InputOverride.INSTANCE.releaseAll();
+                        new MinecraftContext().restoreDefaultInput();
+                        ctx.getSource().sendFeedback(Text.of("Execution stopped."));
+                        return 1;
+                    })
             );
 
         });
