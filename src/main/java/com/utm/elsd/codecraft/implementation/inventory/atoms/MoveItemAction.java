@@ -1,26 +1,35 @@
 package com.utm.elsd.codecraft.implementation.inventory.atoms;
 
-import com.utm.elsd.codecraft.api.GameAction;
-import com.utm.elsd.codecraft.api.GameActionResult;
+import com.utm.elsd.codecraft.api.Action;
+import com.utm.elsd.codecraft.api.ActionStatus;
 import com.utm.elsd.codecraft.context.MinecraftContext;
 import com.utm.elsd.codecraft.implementation.inventory.helper.InventoryHelper;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 
-/**
- * Moves an item from one inventory slot to another.
- * The inventory is organized as a grid with rows and columns.
- * Row 0-3: Main inventory (4 rows × 9 columns)
- * The operation requires the inventory screen to be open.
- */
-public class MoveItemAction implements GameAction {
+public class MoveItemAction implements Action {
+
     private final int fromRow;
     private final int fromCol;
     private final int toRow;
     private final int toCol;
 
+    /**
+     * An action that moves an item from one inventory slot to another.
+     *
+     * @param fromRow The row of the source slot (0-3)
+     * @param fromCol The column of the source slot (0-8)
+     * @param toRow The row of the destination slot (0-3)
+     * @param toCol The column of the destination slot (0-8)
+     * @return A GameAction that will execute the item move
+     */
     public MoveItemAction(int fromRow, int fromCol, int toRow, int toCol) {
+        if (!InventoryHelper.isValidSlot(fromRow, fromCol)) {
+            throw new IllegalArgumentException("Invalid 'from' slot: row=" + fromRow + ", col=" + fromCol);
+        }
+        if (!InventoryHelper.isValidSlot(toRow, toCol)) {
+            throw new IllegalArgumentException("Invalid 'to' slot: row=" + toRow + ", col=" + toCol);
+        }
         this.fromRow = fromRow;
         this.fromCol = fromCol;
         this.toRow = toRow;
@@ -28,49 +37,31 @@ public class MoveItemAction implements GameAction {
     }
 
     @Override
-    public GameActionResult<Void> execute(MinecraftContext context) {
-        if (!context.isAvailable()) {
-            return GameActionResult.failure("Minecraft context not available");
-        }
-
-        if (!InventoryHelper.isValidSlot(fromRow, fromCol)) {
-            return GameActionResult.failure("Invalid 'from' slot: row " + fromRow + ", col " + fromCol);
-        }
-        if (!InventoryHelper.isValidSlot(toRow, toCol)) {
-            return GameActionResult.failure("Invalid 'to' slot: row " + toRow + ", col " + toCol);
-        }
-
-        MinecraftClient client = MinecraftClient.getInstance();
-        PlayerScreenHandler handler = client.player.playerScreenHandler;
+    public ActionStatus tick(MinecraftContext ctx) {
+        PlayerScreenHandler handler = ctx.player().playerScreenHandler;
 
         int fromSlot = InventoryHelper.calculateScreenSlot(fromRow, fromCol);
         int toSlot = InventoryHelper.calculateScreenSlot(toRow, toCol);
 
-        if (fromSlot == -1 || toSlot == -1) {
-            return GameActionResult.failure("Slot coordinates could not be mapped to screen handler");
-        }
-
-        if (handler.getSlot(fromSlot).getStack().isEmpty()) {
-            return GameActionResult.failure("Source slot is empty: row " + fromRow + ", col " + fromCol);
-        }
+        // if slot is empty, the action is done
+        if (handler.getSlot(fromSlot).getStack().isEmpty()) return ActionStatus.DONE;
 
         boolean toSlotHasItem = !handler.getSlot(toSlot).getStack().isEmpty();
 
-        client.interactionManager.clickSlot(
-                handler.syncId, fromSlot, 0, SlotActionType.PICKUP, client.player
+        ctx.client().interactionManager.clickSlot(
+                handler.syncId, fromSlot, 0, SlotActionType.PICKUP, ctx.player()
         );
 
-        client.interactionManager.clickSlot(
-                handler.syncId, toSlot, 0, SlotActionType.PICKUP, client.player
+        ctx.client().interactionManager.clickSlot(
+                handler.syncId, toSlot, 0, SlotActionType.PICKUP, ctx.player()
         );
 
         if (toSlotHasItem) {
-            client.interactionManager.clickSlot(
-                    handler.syncId, fromSlot, 0, SlotActionType.PICKUP, client.player
+            ctx.client().interactionManager.clickSlot(
+                    handler.syncId, fromSlot, 0, SlotActionType.PICKUP, ctx.player()
             );
         }
 
-        return GameActionResult.success();
+        return ActionStatus.DONE;
     }
-
 }
