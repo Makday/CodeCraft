@@ -2,6 +2,8 @@ package com.utm.elsd.codecraft.dsl.interpreter;
 
 import com.utm.elsd.codecraft.implementation.inventory.atoms.ToolBarAction;
 import com.utm.elsd.codecraft.implementation.movement.atoms.MoveForwardAction;
+import com.utm.elsd.codecraft.implementation.player.atoms.TurnAction;
+import com.utm.elsd.codecraft.implementation.player.atoms.UseAction;
 import com.utm.elsd.codecraft.dsl.ast.ASTNode;
 import com.utm.elsd.codecraft.dsl.lexer.Lexer;
 import com.utm.elsd.codecraft.dsl.parser.Parser;
@@ -72,13 +74,21 @@ class InterpreterTest {
         ASTNode.Program program = parse("""
                 tool_bar(2)
                 move_forward(3)
+                turn_left()
+                turn_right()
+                use()
                 """);
 
         InterpreterResult result = Interpreter.standard().execute(program);
 
-        assertEquals(2, result.actions().size());
+        assertEquals(5, result.actions().size());
         assertInstanceOf(ToolBarAction.class, result.actions().get(0));
         assertInstanceOf(MoveForwardAction.class, result.actions().get(1));
+        assertInstanceOf(TurnAction.class, result.actions().get(2));
+        assertEquals(-90, ((TurnAction) result.actions().get(2)).degrees());
+        assertInstanceOf(TurnAction.class, result.actions().get(3));
+        assertEquals(90, ((TurnAction) result.actions().get(3)).degrees());
+        assertInstanceOf(UseAction.class, result.actions().get(4));
     }
 
     private ASTNode.Program parse(String source) {
