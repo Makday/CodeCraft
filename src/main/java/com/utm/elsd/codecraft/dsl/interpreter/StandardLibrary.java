@@ -8,7 +8,7 @@ import com.utm.elsd.codecraft.implementation.inventory.atoms.ToolBarAction;
 import com.utm.elsd.codecraft.implementation.inventory.helper.InventoryHelper;
 import com.utm.elsd.codecraft.implementation.misc.WaitTicksAction;
 import com.utm.elsd.codecraft.implementation.movement.atoms.MoveForwardAction;
-import net.minecraft.item.ItemStack;
+import com.utm.elsd.codecraft.implementation.player.atoms.TurnAction;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
@@ -156,19 +156,18 @@ public final class StandardLibrary {
                     return Value.of(isLikelyEdible(path));
                 })
                 .registerFunction("use", ctx -> {
-                    ctx.log("use() is not mapped to a concrete action yet");
+                    ctx.requireArity("use", 0);
+                    ctx.emit(new com.utm.elsd.codecraft.implementation.player.atoms.UseAction());
                     return Value.nullValue();
                 })
                 .registerFunction("turn_left", ctx -> {
-                    ctx.log("turn_left() is not mapped to a concrete action yet");
+                    ctx.requireArity("turn_left", 0);
+                    ctx.emit(new TurnAction(-90));
                     return Value.nullValue();
                 })
                 .registerFunction("turn_right", ctx -> {
-                    ctx.log("turn_right() is not mapped to a concrete action yet");
-                    return Value.nullValue();
-                })
-                .registerFunction("eat", ctx -> {
-                    ctx.log("eat() is not mapped to a concrete action yet");
+                    ctx.requireArity("turn_right", 0);
+                    ctx.emit(new TurnAction(90));
                     return Value.nullValue();
                 });
     }
