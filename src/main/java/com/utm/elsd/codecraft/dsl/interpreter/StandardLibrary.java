@@ -169,6 +169,11 @@ public final class StandardLibrary {
                     ctx.requireArity("turn_right", 0);
                     ctx.emit(new TurnAction(90));
                     return Value.nullValue();
+                })
+                .registerFunction("center", ctx -> {
+                    ctx.requireArity("center", 0);
+                    ctx.emit(new TurnAction(0));
+                    return Value.nullValue();
                 });
     }
 

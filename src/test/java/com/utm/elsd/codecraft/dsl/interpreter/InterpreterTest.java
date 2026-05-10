@@ -93,6 +93,19 @@ class InterpreterTest {
     }
 
     @Test
+    void centerFunctionEmitsTurnActionWithZeroDegrees() {
+        ASTNode.Program program = parse("""
+                center()
+                """);
+
+        InterpreterResult result = Interpreter.standard().execute(program);
+
+        assertEquals(1, result.actions().size());
+        assertInstanceOf(TurnAction.class, result.actions().get(0));
+        assertEquals(0, ((TurnAction) result.actions().get(0)).degrees());
+    }
+
+    @Test
     void supportsModuloOperator() {
         ASTNode.Program program = parse("""
                 value = 10 % 3

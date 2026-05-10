@@ -10,6 +10,7 @@ import com.utm.elsd.codecraft.context.MinecraftContext;
  * Degrees are interpreted in quarter turns (multiples of 90):
  * - positive values turn right
  * - negative values turn left
+  * - zero means "snap to the nearest cardinal direction"
  */
 public class TurnAction implements Action {
     private static final float EPSILON = 1.0e-3f;
@@ -45,7 +46,7 @@ public class TurnAction implements Action {
 
         int quarterTurns = degrees / 90;
         if (quarterTurns == 0) {
-            return toMinecraftYaw(normalizeYaw(currentYaw));
+            return computeNearestCardinalYaw(currentYaw);
         }
 
         float normalized = normalizeYaw(currentYaw);
@@ -68,6 +69,27 @@ public class TurnAction implements Action {
         }
 
         return toMinecraftYaw(targetIndex * 90.0f);
+    }
+
+    /**
+     * Computes the yaw of the nearest cardinal direction to the player's current facing.
+     * Cardinal directions are: 0° (South), 90° (West), 180° (North), 270° (East).
+     */
+    static float computeNearestCardinalYaw(float currentYaw) {
+        float normalized = normalizeYaw(currentYaw);
+        float remainder = normalized % 90.0f;
+
+        int targetCardinalIndex;
+        if (remainder < 45.0f) {
+            // Closer to the lower cardinal (floor)
+            targetCardinalIndex = (int) Math.floor(normalized / 90.0f);
+        } else {
+            // Closer to the upper cardinal (ceil)
+            targetCardinalIndex = (int) Math.ceil(normalized / 90.0f);
+        }
+
+        float targetNormalized = mod4(targetCardinalIndex) * 90.0f;
+        return toMinecraftYaw(targetNormalized);
     }
 
     private static float normalizeYaw(float yaw) {
