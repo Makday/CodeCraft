@@ -159,6 +159,21 @@ public final class Interpreter {
         if (condition instanceof ASTNode.NotCondition notCondition) {
             return Value.of(!evaluateCondition(notCondition.operand, environment, minecraftContext, actions, logs).isTruthy());
         }
+        if (condition instanceof ASTNode.LogicalCondition logical) {
+            if ("and".equals(logical.op)) {
+                // short-circuit AND
+                boolean left = evaluateCondition(logical.left, environment, minecraftContext, actions, logs).isTruthy();
+                if (!left) return Value.of(false);
+                return Value.of(evaluateCondition(logical.right, environment, minecraftContext, actions, logs).isTruthy());
+            } else if ("or".equals(logical.op)) {
+                // short-circuit OR
+                boolean left = evaluateCondition(logical.left, environment, minecraftContext, actions, logs).isTruthy();
+                if (left) return Value.of(true);
+                return Value.of(evaluateCondition(logical.right, environment, minecraftContext, actions, logs).isTruthy());
+            } else {
+                throw new InterpreterException("Unsupported logical operator: " + logical.op);
+            }
+        }
         if (condition instanceof ASTNode.ComparisonCondition comparisonCondition) {
             Value left = evaluateExpression(comparisonCondition.left, environment, minecraftContext, actions, logs);
             Value right = evaluateExpression(comparisonCondition.right, environment, minecraftContext, actions, logs);

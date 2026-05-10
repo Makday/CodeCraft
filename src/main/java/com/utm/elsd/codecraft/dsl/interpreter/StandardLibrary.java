@@ -160,6 +160,11 @@ public final class StandardLibrary {
                     ctx.emit(new com.utm.elsd.codecraft.implementation.player.atoms.UseAction());
                     return Value.nullValue();
                 })
+                .registerFunction("break", ctx -> {
+                    ctx.requireArity("break", 0);
+                    ctx.emit(new com.utm.elsd.codecraft.implementation.player.atoms.BreakAction());
+                    return Value.nullValue();
+                })
                 .registerFunction("turn_left", ctx -> {
                     ctx.requireArity("turn_left", 0);
                     ctx.emit(new TurnAction(-90));

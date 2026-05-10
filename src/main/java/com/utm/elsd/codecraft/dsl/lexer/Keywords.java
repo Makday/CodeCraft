@@ -16,6 +16,8 @@ public class Keywords {
             Map.entry("not",   TokenType.NOT),
             Map.entry("true",  TokenType.TRUE),
             Map.entry("false", TokenType.FALSE)
+            ,Map.entry("and",   TokenType.AND)
+            ,Map.entry("or",    TokenType.OR)
     );
 
     public static TokenType lookup(String literal) {

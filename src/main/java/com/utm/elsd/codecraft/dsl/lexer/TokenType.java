@@ -12,6 +12,7 @@ public enum TokenType {
     FOR, FROM, TO, TIMES,
     WHILE, IF, ELSE, STOP,
     NOT, TRUE, FALSE,
+    AND, OR,
 
     // Arithmetic
     PLUS, MINUS, STAR, SLASH, PERCENT,
