@@ -297,12 +297,12 @@ public class Parser {
     }
 
     /**
-     * <term> ::= <factor> (("*"|"/") <factor>)*
+     * <term> ::= <factor> (("*"|"/"|"%") <factor>)*
      */
     private ASTNode parseTerm() {
         ASTNode left = parseFactor();
-        while (check(TokenType.STAR) || check(TokenType.SLASH)) {
-            String op = check(TokenType.STAR) ? "*" : "/";
+        while (check(TokenType.STAR) || check(TokenType.SLASH) || check(TokenType.PERCENT)) {
+            String op = check(TokenType.STAR) ? "*" : check(TokenType.SLASH) ? "/" : "%";
             advance();
             ASTNode right = parseFactor();
             left = new ASTNode.BinaryOp(op, left, right);

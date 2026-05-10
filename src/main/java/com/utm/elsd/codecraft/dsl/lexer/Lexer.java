@@ -22,6 +22,7 @@ public class Lexer {
             new TokenSpec(TokenType.MINUS,   "-"),
             new TokenSpec(TokenType.STAR,    "\\*"),
             new TokenSpec(TokenType.SLASH,   "/"),
+            new TokenSpec(TokenType.PERCENT, "%"),
             new TokenSpec(TokenType.LPAREN,  "\\("),
             new TokenSpec(TokenType.RPAREN,  "\\)"),
             new TokenSpec(TokenType.COMMA,   ","),

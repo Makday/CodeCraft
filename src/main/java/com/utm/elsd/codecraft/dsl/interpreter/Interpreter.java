@@ -211,6 +211,13 @@ public final class Interpreter {
                     }
                     yield Value.of(left.asLong() / divisor);
                 }
+                case "%" -> {
+                    long divisor = right.asLong();
+                    if (divisor == 0) {
+                        throw new InterpreterException("Modulo by zero");
+                    }
+                    yield Value.of(left.asLong() % divisor);
+                }
                 default -> throw new InterpreterException("Unsupported operator: " + binaryOp.op);
             };
         }

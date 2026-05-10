@@ -15,6 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InterpreterTest {
@@ -89,6 +90,39 @@ class InterpreterTest {
         assertInstanceOf(TurnAction.class, result.actions().get(3));
         assertEquals(90, ((TurnAction) result.actions().get(3)).degrees());
         assertInstanceOf(UseAction.class, result.actions().get(4));
+    }
+
+    @Test
+    void supportsModuloOperator() {
+        ASTNode.Program program = parse("""
+                value = 10 % 3
+                check(value)
+                """);
+
+        List<String> seen = new ArrayList<>();
+        Interpreter interpreter = Interpreter.builder()
+                .registerFunction("check", ctx -> {
+                    seen.add(ctx.argument(0).asString());
+                    return Value.nullValue();
+                })
+                .build();
+
+        InterpreterResult result = interpreter.execute(program);
+
+        assertEquals(1L, result.variables().get("value").asLong());
+        assertEquals(List.of("1"), seen);
+        assertFalse(result.stopped());
+    }
+
+    @Test
+    void moduloByZeroFails() {
+        ASTNode.Program program = parse("""
+                value = 10 % 0
+                """);
+
+        Interpreter interpreter = Interpreter.standard();
+
+        assertThrows(InterpreterException.class, () -> interpreter.execute(program));
     }
 
     private ASTNode.Program parse(String source) {

@@ -14,7 +14,7 @@ public enum TokenType {
     NOT, TRUE, FALSE,
 
     // Arithmetic
-    PLUS, MINUS, STAR, SLASH,
+    PLUS, MINUS, STAR, SLASH, PERCENT,
 
     // Comparison
     EQ, NEQ, LT, GT, LTE, GTE,
@@ -37,6 +37,7 @@ public enum TokenType {
 //MINUS        # -
 //STAR         # *
 //SLASH        # /
+//PERCENT      # %
 //
 //EQ           # ==
 //NEQ          # !=
