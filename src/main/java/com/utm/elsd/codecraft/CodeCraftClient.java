@@ -1,10 +1,16 @@
 package com.utm.elsd.codecraft;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.utm.elsd.codecraft.api.Action;
 import com.utm.elsd.codecraft.api.ActionRunner;
 import com.utm.elsd.codecraft.api.ActionSequence;
 import com.utm.elsd.codecraft.context.MinecraftContext;
 import com.utm.elsd.codecraft.dsl.CodeReader;
+import com.utm.elsd.codecraft.dsl.ast.ASTNode;
+import com.utm.elsd.codecraft.dsl.interpreter.Interpreter;
+import com.utm.elsd.codecraft.dsl.interpreter.InterpreterResult;
+import com.utm.elsd.codecraft.dsl.lexer.Lexer;
+import com.utm.elsd.codecraft.dsl.parser.Parser;
 import com.utm.elsd.codecraft.implementation.inventory.atoms.CloseInventoryAction;
 import com.utm.elsd.codecraft.implementation.inventory.atoms.DropItemAction;
 import com.utm.elsd.codecraft.implementation.inventory.atoms.MoveItemAction;
@@ -21,11 +27,13 @@ import net.minecraft.text.Text;
 public class CodeCraftClient implements ClientModInitializer {
     private ActionRunner runner;
     private CodeReader codeReader;
+    private Interpreter interpreter;
 
     @Override
     public void onInitializeClient() {
         codeReader = new CodeReader("codecraft");
         runner = new ActionRunner(new MinecraftContext());
+        interpreter = Interpreter.standard();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> runner.tick());
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
@@ -105,10 +113,34 @@ public class CodeCraftClient implements ClientModInitializer {
                                 String filePath = StringArgumentType.getString(ctx, "FilePath");
                                 try {
                                     String code = codeReader.read(filePath);
-                                    ctx.getSource().sendFeedback(Text.of("Reading " + filePath));
-                                    System.out.println(code);
+                                    ASTNode.Program program = new Parser(new Lexer(code).tokenize()).parseProgram();
+                                    InterpreterResult result = interpreter.execute(program, new MinecraftContext());
+
+                                    if (!result.logs().isEmpty()) {
+                                        for (String log : result.logs()) {
+                                            ctx.getSource().sendFeedback(Text.of("[DSL] " + log));
+                                        }
+                                    }
+
+                                    if (!result.actions().isEmpty()) {
+                                        ActionSequence sequence = null;
+                                        for (Action action : result.actions()) {
+                                            if (sequence == null) {
+                                                sequence = ActionSequence.start(action);
+                                            } else {
+                                                sequence.then(action);
+                                            }
+                                        }
+                                        runner.run(sequence);
+                                    }
+
+                                    ctx.getSource().sendFeedback(Text.of(
+                                            "Executed " + filePath
+                                                    + " | actions=" + result.actions().size()
+                                                    + " | stopped=" + result.stopped()
+                                                    + " | last=" + result.lastValue().asString()));
                                 } catch (Exception e) {
-                                    ctx.getSource().sendError(Text.of("Error reading file: " + e.getMessage()));
+                                    ctx.getSource().sendError(Text.of("Error executing file: " + e.getMessage()));
                                 }
                                 return 1;
                             })
