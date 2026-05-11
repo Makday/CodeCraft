@@ -103,7 +103,11 @@ public final class Interpreter {
 
             Value last = Value.nullValue();
             for (long i = 0; i < count; i++) {
-                last = executeStatements(forCount.body.statements, environment, minecraftContext, actions, logs);
+                try {
+                    last = executeStatements(forCount.body.statements, environment, minecraftContext, actions, logs);
+                } catch (StopSignal stopSignal) {
+                    break;
+                }
             }
             return last;
         }
@@ -115,14 +119,22 @@ public final class Interpreter {
             Value last = Value.nullValue();
             for (long i = from; i < to; i++) {
                 environment.assign(forRange.variable, Value.of(i));
-                last = executeStatements(forRange.body.statements, environment, minecraftContext, actions, logs);
+                try {
+                    last = executeStatements(forRange.body.statements, environment, minecraftContext, actions, logs);
+                } catch (StopSignal stopSignal) {
+                    break;
+                }
             }
             return last;
         }
         if (node instanceof ASTNode.WhileLoop whileLoop) {
             Value last = Value.nullValue();
             while (evaluateCondition(whileLoop.condition, environment, minecraftContext, actions, logs).isTruthy()) {
-                last = executeStatements(whileLoop.body.statements, environment, minecraftContext, actions, logs);
+                try {
+                    last = executeStatements(whileLoop.body.statements, environment, minecraftContext, actions, logs);
+                } catch (StopSignal stopSignal) {
+                    break;
+                }
             }
             return last;
         }

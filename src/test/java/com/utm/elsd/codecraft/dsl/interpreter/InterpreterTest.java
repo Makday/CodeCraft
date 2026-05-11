@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InterpreterTest {
 
@@ -66,8 +65,8 @@ class InterpreterTest {
         InterpreterResult result = interpreter.execute(parse(source));
 
         assertEquals(3L, result.variables().get("value").asLong());
-        assertTrue(result.stopped());
-        assertTrue(seen.isEmpty());
+        assertFalse(result.stopped());
+        assertEquals(List.of("3"), seen);
     }
 
     @Test
