@@ -12,6 +12,7 @@ import com.utm.elsd.codecraft.implementation.player.atoms.TurnAction;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -155,6 +156,10 @@ public final class StandardLibrary {
                     path = Registries.ITEM.getId(Registries.ITEM.get(identifier)).getPath();
                     return Value.of(isLikelyEdible(path));
                 })
+                .registerFunction("is_item", ctx -> {
+                    ctx.requireArity("is_item", 1);
+                    return Value.of(isKnownItemSymbol(ctx.argument(0).asString()));
+                })
                 .registerFunction("use", ctx -> {
                     ctx.requireArity("use", 0);
                     ctx.emit(new com.utm.elsd.codecraft.implementation.player.atoms.UseAction());
@@ -228,6 +233,19 @@ public final class StandardLibrary {
             return false;
         }
         return EDIBLE_ITEM_NAMES.contains(itemPath);
+    }
+
+    private static boolean isKnownItemSymbol(String symbol) {
+        if (symbol == null || !symbol.startsWith("items.")) {
+            return false;
+        }
+
+        Identifier identifier = Identifier.tryParse("minecraft:" + symbol.substring("items.".length()));
+        if (identifier == null) {
+            return false;
+        }
+
+        return Objects.equals(Registries.ITEM.getId(Registries.ITEM.get(identifier)), identifier);
     }
 }
 
