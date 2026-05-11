@@ -19,10 +19,24 @@ import java.util.Set;
 /**
  * Performs a right-click (use) with the currently held item.
  *
+ * Can be called with no arguments (uses crosshair target) or with three arguments
+ * representing relative block position (x, y, z) from the player's legs (0, 0, 0).
+ * Max distance is 4 blocks. Cannot use on the player's own position.
+ *
+ * For positional placement, prioritizes adjacent blocks in this order:
+ * 1. Block below (most natural for ground placement)
+ * 2. Block above
+ * 3. Adjacent horizontal blocks
+ *
  * This implementation mirrors vanilla right-click flow by first checking the
  * current crosshair target (block/entity) and only falling back to item use.
  */
 public class UseAction implements Action {
+    private final Integer relX;
+    private final Integer relY;
+    private final Integer relZ;
+    private static final int MAX_DISTANCE = 4;
+    
     private boolean consuming = false;
     private Item initialItem = null;
     private int initialCount = -1;
@@ -67,6 +81,52 @@ public class UseAction implements Action {
             "cooked_salmon",
             "cooked_steak"
     );
+
+    /**
+     * Use the item on the crosshair target (block/entity).
+     */
+    public UseAction() {
+        this.relX = null;
+        this.relY = null;
+        this.relZ = null;
+    }
+
+    /**
+     * Use the item on a block at a relative position from the player's legs.
+     * 
+     * @param relX relative X coordinate (normalized: -4 to 4)
+     * @param relY relative Y coordinate (normalized: -4 to 4)
+     * @param relZ relative Z coordinate (normalized: -4 to 4)
+     * @throws IllegalArgumentException if position is too far or on the player
+     */
+    public UseAction(int relX, int relY, int relZ) {
+        // Validate distance
+        int maxDist = Math.max(Math.max(Math.abs(relX), Math.abs(relY)), Math.abs(relZ));
+        if (maxDist > MAX_DISTANCE) {
+            throw new IllegalArgumentException("Position too far: max distance is " + MAX_DISTANCE + " blocks");
+        }
+        // Validate not on player
+        if (relX == 0 && relY == 0 && relZ == 0) {
+            throw new IllegalArgumentException("Cannot use on the player's own position");
+        }
+        this.relX = relX;
+        this.relY = relY;
+        this.relZ = relZ;
+    }
+
+    private net.minecraft.util.math.BlockPos getTargetBlockPos(MinecraftContext ctx) {
+        ClientPlayerEntity player = ctx.player();
+        // Player's legs are at their position
+        int playerX = (int) Math.floor(player.getX());
+        int playerY = (int) Math.floor(player.getY());
+        int playerZ = (int) Math.floor(player.getZ());
+        
+        return new net.minecraft.util.math.BlockPos(
+            playerX + relX,
+            playerY + relY,
+            playerZ + relZ
+        );
+    }
 
     @Override
     public ActionStatus tick(MinecraftContext ctx) {
@@ -119,6 +179,94 @@ public class UseAction implements Action {
 
                 return ActionStatus.RUNNING;
             }
+
+            // If relative coordinates are provided, use that block position
+            if (relX != null && relY != null && relZ != null) {
+                net.minecraft.util.math.BlockPos targetPos = getTargetBlockPos(ctx);
+                net.minecraft.world.World world = ctx.world();
+                
+                if (world == null) return ActionStatus.DONE;
+
+                // For block placement, we need to click on an adjacent block's face
+                // Priority order: below, above, then other adjacent blocks
+                net.minecraft.util.math.BlockPos adjacentPos = null;
+                net.minecraft.util.math.Direction clickFace = null;
+
+                // 1. Try block below (most natural for placement)
+                net.minecraft.util.math.BlockPos below = targetPos.down();
+                if (!world.getBlockState(below).isAir()) {
+                    adjacentPos = below;
+                    clickFace = net.minecraft.util.math.Direction.UP;
+                }
+
+                // 2. Try block above
+                if (adjacentPos == null) {
+                    net.minecraft.util.math.BlockPos above = targetPos.up();
+                    if (!world.getBlockState(above).isAir()) {
+                        adjacentPos = above;
+                        clickFace = net.minecraft.util.math.Direction.DOWN;
+                    }
+                }
+
+                // 3. Try other adjacent blocks
+                if (adjacentPos == null) {
+                    net.minecraft.util.math.Direction[] directions = net.minecraft.util.math.Direction.values();
+                    for (net.minecraft.util.math.Direction dir : directions) {
+                        // Skip UP and DOWN since we already tried those
+                        if (dir == net.minecraft.util.math.Direction.UP || dir == net.minecraft.util.math.Direction.DOWN) {
+                            continue;
+                        }
+                        
+                        net.minecraft.util.math.BlockPos adjacent = targetPos.offset(dir);
+                        if (!world.getBlockState(adjacent).isAir()) {
+                            adjacentPos = adjacent;
+                            clickFace = dir.getOpposite();
+                            break;
+                        }
+                    }
+                }
+
+                // If no adjacent block found, target is surrounded by air - can't place
+                if (adjacentPos == null) {
+                    return ActionStatus.DONE;
+                }
+
+                // Create a hit result on the adjacent block's face
+                net.minecraft.util.hit.BlockHitResult blockHit = new net.minecraft.util.hit.BlockHitResult(
+                    new net.minecraft.util.math.Vec3d(
+                        adjacentPos.getX() + 0.5,
+                        adjacentPos.getY() + 0.5,
+                        adjacentPos.getZ() + 0.5
+                    ),
+                    clickFace,
+                    adjacentPos,
+                    false
+                );
+
+                ActionResult result = client.interactionManager.interactBlock(player, Hand.MAIN_HAND, blockHit);
+                
+                // If not handled by block placement, try item use (for things like chests)
+                if (result == ActionResult.PASS) {
+                    // Try to interact with the target block directly for things like opening chests
+                    net.minecraft.block.BlockState targetState = world.getBlockState(targetPos);
+                    if (!targetState.isAir()) {
+                        net.minecraft.util.hit.BlockHitResult directHit = new net.minecraft.util.hit.BlockHitResult(
+                            new net.minecraft.util.math.Vec3d(
+                                targetPos.getX() + 0.5,
+                                targetPos.getY() + 0.5,
+                                targetPos.getZ() + 0.5
+                            ),
+                            net.minecraft.util.math.Direction.UP,
+                            targetPos,
+                            false
+                        );
+                        client.interactionManager.interactBlock(player, Hand.MAIN_HAND, directHit);
+                    }
+                }
+                
+                return ActionStatus.DONE;
+            }
+
             // Mirror vanilla: try block/entity first, then item. If item use starts a continuous
             // use (e.g. eating), the client will report isUsingItem() and we should wait until
             // the use completes.
@@ -184,7 +332,6 @@ public class UseAction implements Action {
         return EDIBLE_ITEM_NAMES.contains(itemPath);
     }
 }
-
 
 
 
