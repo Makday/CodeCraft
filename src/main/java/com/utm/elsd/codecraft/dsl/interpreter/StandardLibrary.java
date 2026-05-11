@@ -162,13 +162,29 @@ public final class StandardLibrary {
                     return Value.of(isKnownItemSymbol(ctx.argument(0).asString()));
                 })
                 .registerFunction("use", ctx -> {
-                    ctx.requireArity("use", 0);
-                    ctx.emit(new com.utm.elsd.codecraft.implementation.player.atoms.UseAction());
+                    if (ctx.arguments().isEmpty()) {
+                        ctx.requireArity("use", 0);
+                        ctx.emit(new com.utm.elsd.codecraft.implementation.player.atoms.UseAction());
+                    } else {
+                        ctx.requireArity("use", 3);
+                        int relX = ctx.argument(0).asInt();
+                        int relY = ctx.argument(1).asInt();
+                        int relZ = ctx.argument(2).asInt();
+                        ctx.emit(new com.utm.elsd.codecraft.implementation.player.atoms.UseAction(relX, relY, relZ));
+                    }
                     return Value.nullValue();
                 })
                 .registerFunction("break", ctx -> {
-                    ctx.requireArity("break", 0);
-                    ctx.emit(new com.utm.elsd.codecraft.implementation.player.atoms.BreakAction());
+                    if (ctx.arguments().isEmpty()) {
+                        ctx.requireArity("break", 0);
+                        ctx.emit(new com.utm.elsd.codecraft.implementation.player.atoms.BreakAction());
+                    } else {
+                        ctx.requireArity("break", 3);
+                        int relX = ctx.argument(0).asInt();
+                        int relY = ctx.argument(1).asInt();
+                        int relZ = ctx.argument(2).asInt();
+                        ctx.emit(new com.utm.elsd.codecraft.implementation.player.atoms.BreakAction(relX, relY, relZ));
+                    }
                     return Value.nullValue();
                 })
                 .registerFunction("turn_left", ctx -> {
