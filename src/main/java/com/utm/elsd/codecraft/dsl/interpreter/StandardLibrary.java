@@ -7,6 +7,7 @@ import com.utm.elsd.codecraft.implementation.inventory.atoms.OpenInventoryAction
 import com.utm.elsd.codecraft.implementation.inventory.atoms.ToolBarAction;
 import com.utm.elsd.codecraft.implementation.inventory.helper.InventoryHelper;
 import com.utm.elsd.codecraft.implementation.misc.WaitTicksAction;
+import com.utm.elsd.codecraft.implementation.misc.PrintAction;
 import com.utm.elsd.codecraft.implementation.movement.atoms.MoveForwardAction;
 import com.utm.elsd.codecraft.implementation.player.atoms.TurnAction;
 import net.minecraft.registry.Registries;
@@ -67,7 +68,7 @@ public final class StandardLibrary {
                     return Value.nullValue();
                 })
                 .registerFunction("print", ctx -> {
-                    ctx.log(joinArguments(ctx));
+                    ctx.emit(new PrintAction(joinArguments(ctx)));
                     return Value.nullValue();
                 })
                 .registerFunction("tool_bar", ctx -> {
