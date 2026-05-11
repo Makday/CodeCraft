@@ -51,6 +51,14 @@ public class UseAction implements Action {
     private static final int MAX_CONSUME_TICKS = 100; // safety timeout
     private boolean useKeyPressed = false;
     
+    // Water bucket handling state
+    private boolean usingWaterBucket = false;
+    private float originalYaw = 0f;
+    private float originalPitch = 0f;
+    private boolean turnedToTarget = false;
+    private int waterBucketTicks = 0;
+    private static final int WATER_BUCKET_TIMEOUT = 40; // ticks to allow for turning + using
+    
     // Set of known edible items (food)
     private static final Set<String> EDIBLE_ITEM_NAMES = Set.of(
             "apple",
@@ -212,6 +220,74 @@ public class UseAction implements Action {
                 
                 if (world == null) return ActionStatus.DONE;
 
+                // Special handling for water bucket with turning and facing restoration
+                if (isHoldingWaterBucket(player)) {
+                    // Water bucket placement by looking at target
+                    if (!usingWaterBucket) {
+                        // Start water bucket sequence: store original facing
+                        usingWaterBucket = true;
+                        originalYaw = player.getYaw();
+                        originalPitch = player.getPitch();
+                        turnedToTarget = false;
+                        waterBucketTicks = 0;
+                        return ActionStatus.RUNNING;
+                    }
+
+                    waterBucketTicks++;
+
+                    // Calculate angles to face target position
+                    net.minecraft.util.math.Vec3d targetCenter = new net.minecraft.util.math.Vec3d(
+                        targetPos.getX() + 0.5,
+                        targetPos.getY() + 0.5,
+                        targetPos.getZ() + 0.5
+                    );
+                    float[] angles = calculateLookAtAngles(player, targetCenter);
+                    float targetYaw = angles[0];
+                    float targetPitch = angles[1];
+
+                    // Turn towards target
+                    if (!turnedToTarget) {
+                        float currentYaw = player.getYaw();
+                        float currentPitch = player.getPitch();
+                        
+                        // Set new rotation
+                        player.setYaw(targetYaw);
+                        player.setPitch(targetPitch);
+
+                        // Check if close enough to target yaw/pitch (using current values before next tick)
+                        float yawDiff = Math.abs(targetYaw - currentYaw);
+                        if (yawDiff > 180) yawDiff = 360 - yawDiff;
+                        float pitchDiff = Math.abs(targetPitch - currentPitch);
+
+                        if (yawDiff < 5 && pitchDiff < 5) {
+                            turnedToTarget = true;
+                        }
+                    }
+
+                    // Once turned, use the water bucket
+                    if (turnedToTarget) {
+                        ActionResult result = client.interactionManager.interactItem(player, Hand.MAIN_HAND);
+
+                        // Always restore facing and finish (whether water was used or not)
+                        player.setYaw(originalYaw);
+                        player.setPitch(originalPitch);
+                        usingWaterBucket = false;
+                        turnedToTarget = false;
+                        return ActionStatus.DONE;
+                    }
+
+                    // Safety timeout
+                    if (waterBucketTicks > WATER_BUCKET_TIMEOUT) {
+                        player.setYaw(originalYaw);
+                        player.setPitch(originalPitch);
+                        usingWaterBucket = false;
+                        turnedToTarget = false;
+                        return ActionStatus.DONE;
+                    }
+
+                    return ActionStatus.RUNNING;
+                }
+
                 // For block placement, we need to click on an adjacent block's face
                 // Priority order: below, above, then other adjacent blocks
                 net.minecraft.util.math.BlockPos adjacentPos = null;
@@ -241,7 +317,7 @@ public class UseAction implements Action {
                         if (dir == net.minecraft.util.math.Direction.UP || dir == net.minecraft.util.math.Direction.DOWN) {
                             continue;
                         }
-                        
+
                         net.minecraft.util.math.BlockPos adjacent = targetPos.offset(dir);
                         if (!world.getBlockState(adjacent).isAir()) {
                             adjacentPos = adjacent;
@@ -269,7 +345,7 @@ public class UseAction implements Action {
                 );
 
                 ActionResult result = client.interactionManager.interactBlock(player, Hand.MAIN_HAND, blockHit);
-                
+
                 // If not handled by block placement, try item use (for things like chests)
                 if (result == ActionResult.PASS) {
                     // Try to interact with the target block directly for things like opening chests
@@ -288,7 +364,7 @@ public class UseAction implements Action {
                         client.interactionManager.interactBlock(player, Hand.MAIN_HAND, directHit);
                     }
                 }
-                
+
                 return ActionStatus.DONE;
             }
 
@@ -356,9 +432,50 @@ public class UseAction implements Action {
         String itemPath = Registries.ITEM.getId(item).getPath();
         return EDIBLE_ITEM_NAMES.contains(itemPath);
     }
+
+    /**
+     * Check if the player is holding a water bucket or empty bucket
+     */
+    private boolean isHoldingWaterBucket(ClientPlayerEntity player) {
+        ItemStack stack = player.getMainHandStack();
+        if (stack == null || stack.isEmpty()) return false;
+        String itemPath = Registries.ITEM.getId(stack.getItem()).getPath();
+        return itemPath.equals("water_bucket") || itemPath.equals("bucket");
+    }
+
+    /**
+     * Check if the player has line of sight to the target position by checking distance
+     */
+    private boolean canSeeLOS(MinecraftContext ctx, net.minecraft.util.math.BlockPos targetPos) {
+        ClientPlayerEntity player = ctx.player();
+        if (player == null) return false;
+
+        // Simple line-of-sight check: if target is within about 4 blocks and we can see it
+        double dx = targetPos.getX() + 0.5 - player.getX();
+        double dy = targetPos.getY() + 0.5 - (player.getY() + player.getEyeHeight(player.getPose()));
+        double dz = targetPos.getZ() + 0.5 - player.getZ();
+
+        // Check if target is within 4 blocks
+        double distSq = dx * dx + dy * dy + dz * dz;
+        return distSq <= 16.0; // 4 blocks squared
+    }
+
+    /**
+     * Calculate yaw and pitch to face the target position
+     */
+    private float[] calculateLookAtAngles(ClientPlayerEntity player, net.minecraft.util.math.Vec3d targetPos) {
+        net.minecraft.util.math.Vec3d eyePos = new net.minecraft.util.math.Vec3d(
+            player.getX(),
+            player.getY() + player.getEyeHeight(player.getPose()),
+            player.getZ()
+        );
+
+        net.minecraft.util.math.Vec3d diff = targetPos.subtract(eyePos);
+        double distHorizontal = Math.sqrt(diff.x * diff.x + diff.z * diff.z);
+
+        float yaw = (float) Math.toDegrees(Math.atan2(-diff.x, diff.z));
+        float pitch = (float) -Math.toDegrees(Math.atan2(diff.y, distHorizontal));
+
+        return new float[]{yaw, pitch};
+    }
 }
-
-
-
-
-
