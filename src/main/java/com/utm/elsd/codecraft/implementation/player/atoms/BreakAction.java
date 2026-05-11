@@ -15,13 +15,67 @@ import net.minecraft.world.World;
 
 /**
  * Holds left click (attack) on the block the player is currently looking at until it is broken.
+ *
+ * Can be called with no arguments (breaks crosshair target) or with three arguments
+ * representing relative block position (x, y, z) from the player's legs (0, 0, 0).
+ * Max distance is 4 blocks. Cannot break on the player's own position.
  */
 public class BreakAction implements Action {
+    private final Integer relX;
+    private final Integer relY;
+    private final Integer relZ;
+    private static final int MAX_DISTANCE = 4;
 
     private boolean initialized = false;
     private BlockPos targetPos;
     private Direction targetSide;
     private BlockState initialState;
+
+    /**
+     * Break the block at the crosshair target.
+     */
+    public BreakAction() {
+        this.relX = null;
+        this.relY = null;
+        this.relZ = null;
+    }
+
+    /**
+     * Break a block at a relative position from the player's legs.
+     * 
+     * @param relX relative X coordinate (normalized: -4 to 4)
+     * @param relY relative Y coordinate (normalized: -4 to 4)
+     * @param relZ relative Z coordinate (normalized: -4 to 4)
+     * @throws IllegalArgumentException if position is too far or on the player
+     */
+    public BreakAction(int relX, int relY, int relZ) {
+        // Validate distance
+        int maxDist = Math.max(Math.max(Math.abs(relX), Math.abs(relY)), Math.abs(relZ));
+        if (maxDist > MAX_DISTANCE) {
+            throw new IllegalArgumentException("Position too far: max distance is " + MAX_DISTANCE + " blocks");
+        }
+        // Validate not on player
+        if (relX == 0 && relY == 0 && relZ == 0) {
+            throw new IllegalArgumentException("Cannot break on the player's own position");
+        }
+        this.relX = relX;
+        this.relY = relY;
+        this.relZ = relZ;
+    }
+
+    private BlockPos getTargetBlockPos(MinecraftContext ctx) {
+        ClientPlayerEntity player = ctx.player();
+        // Player's legs are at their position
+        int playerX = (int) Math.floor(player.getX());
+        int playerY = (int) Math.floor(player.getY());
+        int playerZ = (int) Math.floor(player.getZ());
+        
+        return new BlockPos(
+            playerX + relX,
+            playerY + relY,
+            playerZ + relZ
+        );
+    }
 
     @Override
     public ActionStatus tick(MinecraftContext ctx) {
@@ -32,6 +86,32 @@ public class BreakAction implements Action {
         if (client == null || player == null || world == null) return ActionStatus.DONE;
 
         try {
+            // If relative coordinates are provided, break that specific block
+            if (relX != null && relY != null && relZ != null) {
+                BlockPos targetPos = getTargetBlockPos(ctx);
+                BlockState blockState = world.getBlockState(targetPos);
+                
+                if (blockState.isAir()) {
+                    return ActionStatus.DONE;
+                }
+
+                // Determine which face to break from (default to top)
+                Direction side = Direction.UP;
+                
+                // Attempt to dig / attack the block this tick
+                client.interactionManager.attackBlock(targetPos, side);
+                player.swingHand(Hand.MAIN_HAND);
+                
+                // Check if block was broken (changed or is now air)
+                BlockState currentState = world.getBlockState(targetPos);
+                if (currentState.isAir() || !currentState.getBlock().equals(blockState.getBlock())) {
+                    return ActionStatus.DONE;
+                }
+                
+                return ActionStatus.RUNNING;
+            }
+
+            // Default behavior: use crosshair target
             if (!initialized) {
                 HitResult hit = client.crosshairTarget;
                 if (hit == null || hit.getType() != HitResult.Type.BLOCK) {
@@ -65,4 +145,3 @@ public class BreakAction implements Action {
         return ActionStatus.RUNNING;
     }
 }
-
