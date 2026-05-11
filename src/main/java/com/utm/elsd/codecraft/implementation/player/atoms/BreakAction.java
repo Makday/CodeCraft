@@ -17,7 +17,13 @@ import net.minecraft.world.World;
  * Holds left click (attack) on the block the player is currently looking at until it is broken.
  *
  * Can be called with no arguments (breaks crosshair target) or with three arguments
- * representing relative block position (x, y, z) from the player's legs (0, 0, 0).
+ * representing relative block position from the player's perspective:
+ *   - (0, 0, 1) = 1 block forward (where player is looking)
+ *   - (1, 0, 0) = 1 block to the right
+ *   - (-1, 0, 0) = 1 block to the left
+ *   - (0, 1, 0) = 1 block up
+ *   - (0, 0, -1) = 1 block backward
+ *
  * Max distance is 4 blocks. Cannot break on the player's own position.
  */
 public class BreakAction implements Action {
@@ -65,16 +71,35 @@ public class BreakAction implements Action {
 
     private BlockPos getTargetBlockPos(MinecraftContext ctx) {
         ClientPlayerEntity player = ctx.player();
-        // Player's legs are at their position
-        int playerX = (int) Math.floor(player.getX());
-        int playerY = (int) Math.floor(player.getY());
-        int playerZ = (int) Math.floor(player.getZ());
-        
-        return new BlockPos(
-            playerX + relX,
-            playerY + relY,
-            playerZ + relZ
-        );
+        net.minecraft.util.math.BlockPos origin = player.getBlockPos();
+        float snappedYaw = TurnAction.computeNearestCardinalYaw(player.getYaw());
+
+        int dx;
+        int dz;
+        switch ((int) snappedYaw) {
+            case 0 -> {          // South
+                dx = -relX;
+                dz = relZ;
+            }
+            case 90 -> {         // West
+                dx = -relZ;
+                dz = -relX;
+            }
+            case 180 -> {        // North
+                dx = relX;
+                dz = -relZ;
+            }
+            case -90 -> {        // East
+                dx = relZ;
+                dz = relX;
+            }
+            default -> {
+                dx = -relX;
+                dz = relZ;
+            }
+        }
+
+        return origin.add(dx, relY, dz);
     }
 
     @Override
@@ -145,3 +170,4 @@ public class BreakAction implements Action {
         return ActionStatus.RUNNING;
     }
 }
+
