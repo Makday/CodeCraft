@@ -81,4 +81,4 @@ After building, you can find the generated JAR file in the `build/libs` director
 To use the mod, place the JAR file in your Minecraft `mods` folder.
 Make sure your Minecraft installation is set up to use the Fabric loader.
 Additionally, make sure the `mods` folder contains the Fabric API JAR file, which is required for the mod to function properly.
-
+For more information, refer to the [documentation](documentation.md).
