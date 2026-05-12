@@ -1,0 +1,21 @@
+hunger_limit = 6
+
+if state.hunger <= hunger_limit
+    open_inventory()
+    found = false
+
+    for row from 0 to 3
+        for col from 0 to 9
+            if is_edible(item_at(row, col))
+                found = true
+                move_item(row, col, 3, 0)
+                stop
+        if found
+            stop
+
+    close_inventory()
+
+    tool_bar(0)  -- corresponds to position (3, 0) of inventory
+
+    for 10 times
+        use()
