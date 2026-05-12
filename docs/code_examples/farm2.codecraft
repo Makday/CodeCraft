@@ -1,0 +1,32 @@
+rows = 9
+cols = 9
+crop = items.wheat_seeds
+
+center()
+
+for row from 0 to rows
+    for col from 0 to cols
+        tool_bar(0)		-- select hoe
+        use()
+        tool_bar(1)		-- select seeds
+        use()
+        if col < cols - 1
+            move_forward(1)
+        if col == 2 and row == 4
+            break(0, -1, 1)
+            tool_bar(2)		-- select water bucket
+            use(0, -1, 1)
+            tool_bar(3)		-- select wooden stair block
+            use(0, -1, 1)
+
+    if row < rows - 1
+        if row % 2 == 1 	-- odd rows
+            turn_right()
+            move_forward(1)
+            turn_right()
+        else			-- even rows
+            turn_left()
+            move_forward(1)
+            turn_left()
+
+print("Farm planting complete!")

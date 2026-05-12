@@ -22,6 +22,7 @@ public class Lexer {
             new TokenSpec(TokenType.MINUS,   "-"),
             new TokenSpec(TokenType.STAR,    "\\*"),
             new TokenSpec(TokenType.SLASH,   "/"),
+            new TokenSpec(TokenType.PERCENT, "%"),
             new TokenSpec(TokenType.LPAREN,  "\\("),
             new TokenSpec(TokenType.RPAREN,  "\\)"),
             new TokenSpec(TokenType.COMMA,   ","),
@@ -44,7 +45,7 @@ public class Lexer {
 
     public Lexer(String source) {
         // Normalise line endings, keep blank lines so indent tracking works
-        this.lines = source.split("\n");
+        this.lines = source.replace("\r\n", "\n").replace('\r', '\n').split("\n", -1);
     }
 
     public List<Token> tokenize() {
@@ -86,7 +87,7 @@ public class Lexer {
             int colOffset = indent; // column starts after indentation
             while (pos < content.length()) {
                 // skip inline whitespace
-                if (content.charAt(pos) == ' ' || content.charAt(pos) == '\t') {
+                if (content.charAt(pos) == ' ' || content.charAt(pos) == '\t' || content.charAt(pos) == '\r') {
                     colOffset++;
                     pos++;
                     continue;

@@ -135,6 +135,20 @@ public abstract class ASTNode {
         }
     }
 
+    public static class LogicalCondition extends Condition {
+        public final String op; // "and" or "or"
+        public final Condition left;
+        public final Condition right;
+
+        public LogicalCondition(String op, Condition left, Condition right) {
+            this.op = op; this.left = left; this.right = right;
+        }
+
+        @Override public String toTree(String indent) {
+            return indent + "Logical(" + op + ")\n" + left.toTree(indent + "  ") + "\n" + right.toTree(indent + "  ");
+        }
+    }
+
     public static class BooleanCondition extends Condition {
         public final ASTNode expr;
         public BooleanCondition(ASTNode expr) { this.expr = expr; }

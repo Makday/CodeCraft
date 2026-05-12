@@ -1,0 +1,17 @@
+open_inventory()
+
+for row from 0 to 3
+    for col from 0 to 9
+        if item_at(row, col) == items.netherite_sword
+            move_item(row, col, 3, 0)
+            
+        if item_at(row, col) == items.netherite_axe
+            move_item(row, col, 3, 1)
+                    
+        if item_at(row, col) == items.netherite_pickaxe
+            move_item(row, col, 3, 2)
+                                
+        if item_at(row, col) == items.dirt
+            drop_item(row, col)
+
+close_inventory()

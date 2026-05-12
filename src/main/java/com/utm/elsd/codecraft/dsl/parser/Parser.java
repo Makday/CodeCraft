@@ -240,26 +240,52 @@ public class Parser {
      * Always returns a concrete ASTNode.Condition — no casting needed by callers.
      */
     private ASTNode.Condition parseCondition() {
-        // "not" <condition>  ->  NotCondition
+        return parseOrCondition();
+    }
+
+    // or has lowest precedence
+    private ASTNode.Condition parseOrCondition() {
+        ASTNode.Condition left = parseAndCondition();
+        while (check(TokenType.OR)) {
+            advance();
+            ASTNode.Condition right = parseAndCondition();
+            left = new ASTNode.LogicalCondition("or", left, right);
+        }
+        return left;
+    }
+
+    // and has higher precedence than or
+    private ASTNode.Condition parseAndCondition() {
+        ASTNode.Condition left = parseNotOrComparison();
+        while (check(TokenType.AND)) {
+            advance();
+            ASTNode.Condition right = parseNotOrComparison();
+            left = new ASTNode.LogicalCondition("and", left, right);
+        }
+        return left;
+    }
+
+    // handles optional leading not, or a comparison/boolean condition
+    private ASTNode.Condition parseNotOrComparison() {
         if (check(TokenType.NOT)) {
             advance();
-            ASTNode.Condition operand = parseCondition();
+            ASTNode.Condition operand = parseNotOrComparison();
             return new ASTNode.NotCondition(operand);
         }
 
         // Parse left-hand expression first
-        ASTNode left = parseExpression();
+        ASTNode leftExpr = parseExpression();
 
         // expr <comparison_op> expr  ->  ComparisonCondition
         if (isComparisonOp(current.type)) {
             String op = comparisonOpString(current.type);
             advance();
             ASTNode right = parseExpression();
-            return new ASTNode.ComparisonCondition(op, left, right);
+            return new ASTNode.ComparisonCondition(op, leftExpr, right);
         }
 
         // bare identifier or function call used as boolean  ->  BooleanCondition
-        return new ASTNode.BooleanCondition(left);
+        return new ASTNode.BooleanCondition(leftExpr);
     }
 
     private boolean isComparisonOp(TokenType t) {
@@ -297,12 +323,12 @@ public class Parser {
     }
 
     /**
-     * <term> ::= <factor> (("*"|"/") <factor>)*
+     * <term> ::= <factor> (("*"|"/"|"%") <factor>)*
      */
     private ASTNode parseTerm() {
         ASTNode left = parseFactor();
-        while (check(TokenType.STAR) || check(TokenType.SLASH)) {
-            String op = check(TokenType.STAR) ? "*" : "/";
+        while (check(TokenType.STAR) || check(TokenType.SLASH) || check(TokenType.PERCENT)) {
+            String op = check(TokenType.STAR) ? "*" : check(TokenType.SLASH) ? "/" : "%";
             advance();
             ASTNode right = parseFactor();
             left = new ASTNode.BinaryOp(op, left, right);

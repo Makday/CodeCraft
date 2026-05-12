@@ -12,9 +12,10 @@ public enum TokenType {
     FOR, FROM, TO, TIMES,
     WHILE, IF, ELSE, STOP,
     NOT, TRUE, FALSE,
+    AND, OR,
 
     // Arithmetic
-    PLUS, MINUS, STAR, SLASH,
+    PLUS, MINUS, STAR, SLASH, PERCENT,
 
     // Comparison
     EQ, NEQ, LT, GT, LTE, GTE,
@@ -37,6 +38,7 @@ public enum TokenType {
 //MINUS        # -
 //STAR         # *
 //SLASH        # /
+//PERCENT      # %
 //
 //EQ           # ==
 //NEQ          # !=
