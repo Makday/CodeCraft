@@ -28,7 +28,15 @@ codecraft/
 └── pom.xml
 ```
 
+---
+
 ## Getting Started
+
+1. [How to run the project](#running-the-project)
+2. [How to build and use the project](#building-the-project-and-usage)
+3. [Language documentation](documentation.md)
+
+---
 
 ### Running the Project
 
@@ -46,6 +54,8 @@ gradlew runClient
 ```bash
 ./gradlew runClient
 ```
+
+---
 
 ### Building the Project and usage
 
