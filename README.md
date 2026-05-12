@@ -24,16 +24,25 @@ codecraft/
 │   └── week_x/
 │   └── Report/           # LaTeX source + compiled PDF report              
 |   └── code_examples/    # Examples of the code written in the DSL
+├── documentation.md      # Language documentation
 └── pom.xml
 ```
 
+---
+
 ## Getting Started
+
+1. [How to run the project](#running-the-project)
+2. [How to build and use the project](#building-the-project-and-usage)
+3. [Language documentation](documentation.md)
+
+---
+
+### Running the Project
 
 ### Prerequisites
 
 - JDK (version 21 or higher)
-
-### Running the Project
 
 **Windows:**
 
@@ -46,7 +55,16 @@ gradlew runClient
 ./gradlew runClient
 ```
 
-### Building the Project
+---
+
+### Building the Project and usage
+
+### Prerequisites
+
+- JDK (version 21 or higher)
+- Minecraft (version 1.21.6)
+- Fabric loader for Minecraft (version 0.18.5 or higher)
+- Fabric API
 
 **Windows:**
 
@@ -58,3 +76,9 @@ gradlew build
 ```bash
 ./gradlew build
 ```
+
+After building, you can find the generated JAR file in the `build/libs` directory. 
+To use the mod, place the JAR file in your Minecraft `mods` folder.
+Make sure your Minecraft installation is set up to use the Fabric loader.
+Additionally, make sure the `mods` folder contains the Fabric API JAR file, which is required for the mod to function properly.
+
