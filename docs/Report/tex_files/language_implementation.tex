@@ -316,4 +316,169 @@ else
 \end{lstlisting}
 
 These examples confirm that the parser correctly handles operator precedence, block structure, and the various control flow constructs defined in the language. The simplified ASTs omit whitespace and delimiters, focusing on the semantic relationships that will be used in later compilation phases.
-The full variants of these ASTs are included in the Appendix~\ref{appendix:asts}..
+The full variants of these ASTs are included in the Appendix~\ref{appendix:asts}.
+
+\section{Interpreter Implementation}
+
+The interpreter walks the AST produced by the parser and executes the program, producing a sequence of \texttt{Action} objects that are later dispatched to the Minecraft game engine.
+The interpreter is intentionally data-driven, separating core AST evaluation logic from extensible function bindings and special object resolution.
+
+\subsection{Overall Architecture}
+
+The \texttt{Interpreter} class serves as the main entry point for execution.
+It maintains references to a \texttt{FunctionRegistry} (for user-defined and standard library functions) and a \texttt{SpecialObjectResolver} (for dot-notation object access), making the system extensible without coupling the traversal logic to specific function implementations.
+Upon initialization, an \texttt{Environment} is created to hold the program's variables, and lists are allocated for emitted \texttt{Action} objects and logged messages.
+
+The primary method, \texttt{execute(ASTNode.Program program)}, accepts a parsed AST and returns an \texttt{InterpreterResult} containing the final value, all emitted actions, a snapshot of the final environment state, all logged messages, and a stopped flag indicating whether a \texttt{stop} statement was encountered.
+
+\subsection{Environment and Value Management}
+
+The \texttt{Environment} class manages variable storage using a stack of scopes.
+Each scope is a \texttt{LinkedHashMap<String, Value>} mapping variable names to their runtime values.
+Although the current language uses only global scope, the stack structure permits future extensions for nested scopes (e.g., function-local variables) without API changes.
+
+Variable assignment is handled by the \texttt{assign(name, value)} method, which searches the scope stack from the topmost scope downward; if the variable already exists in any scope, its value is updated in place.
+Otherwise, the variable is created in the topmost (most local) scope.
+Variable lookup via \texttt{get(name)} searches the stack from top to bottom and throws an \texttt{InterpreterException} if the variable is undefined.
+
+The \texttt{Value} class is a wrapper around arbitrary \texttt{Object} instances, providing type-aware conversion methods.
+A single \texttt{NULL} instance is cached and reused for null values.
+The \texttt{asLong()}, \texttt{asBoolean()}, and \texttt{asString()} methods perform implicit type conversions---for example, boolean \texttt{true} converts to \texttt{1L}, and any non-empty string converts to \texttt{true}---allowing programs to mix types flexibly.
+
+\subsection{Statement Execution}
+
+Statements are executed by the \texttt{executeStatement()} method, which dispatches on the AST node type and handles all control flow constructs.
+
+\subsubsection{Assignments and Variables}
+
+An \texttt{Assignment} node is handled by evaluating the right-hand expression and storing the result in the environment under the target variable name.
+Assignment Execution (Pseudocode):
+
+\begin{lstlisting}
+if (node instanceof ASTNode.Assignment assignment) {
+    Value value = evaluateExpression(assignment.value, ...);
+    environment.assign(assignment.name, value);
+    return value;
+}
+\end{lstlisting}
+
+\subsubsection{For Loops}
+
+The interpreter handles two forms of \texttt{for} loops.
+For count loops (\texttt{for N times}), the count expression is evaluated to a long, and the loop body is executed that many times.
+For range loops (\texttt{for X from A to B}), the bounds are evaluated, and the loop variable is assigned to each value from \texttt{A} (inclusive) to \texttt{B} (exclusive) in sequence, allowing the body to access the current iteration value.
+
+Both loop forms catch \texttt{StopSignal} exceptions (thrown by a \texttt{stop} statement) to enable early exit.
+When caught, the loop terminates immediately and execution resumes after the loop.
+For Count Loop Execution (Pseudocode):
+
+\begin{lstlisting}
+if (node instanceof ASTNode.ForCount forCount) {
+    long count = evaluateExpression(forCount.count, ...).asLong();
+    Value last = Value.nullValue();
+    for (long i = 0; i < count; i++) {
+        try {
+            last = executeStatements(forCount.body.statements, ...);
+        } catch (StopSignal stopSignal) {
+            break;
+        }
+    }
+    return last;
+}
+\end{lstlisting}
+
+\subsubsection{While Loops}
+
+While loops evaluate their condition repeatedly using \texttt{evaluateCondition()}, which can handle various condition types (comparison conditions, boolean conditions, and negations).
+The loop body is executed as long as the condition evaluates to a truthy value. As with \texttt{for} loops, a \texttt{stop} statement breaks out of the loop.
+
+\subsubsection{If-Else Statements}
+
+The condition is evaluated once, and if it is truthy, the then-block is executed.
+If the condition is falsy and an else-block is present, the else-block is executed instead.
+Only one branch is ever executed.
+
+\subsubsection{Stop Statements}
+
+When a \texttt{stop} statement is encountered, the interpreter throws an internal \texttt{StopSignal} exception.
+This signal propagates up through nested loops and blocks, causing immediate termination.
+The top-level \texttt{execute()}} method catches this signal and sets the stopped flag in the returned result.
+
+\subsection{Expression Evaluation}
+
+Expressions are evaluated by the \texttt{evaluateExpression()} method, which similarly dispatches on node type.
+
+\subsubsection{Literals}
+
+Numeric, string, and boolean literals are wrapped in \texttt{Value} objects. Identifiers are looked up in the environment.
+
+\subsubsection{Arithmetic and String Operations}
+
+Binary operators are handled by evaluating both operands and applying the operator:
+\begin{itemize}
+\item[--] Addition (\texttt{+}) performs numeric addition if both operands are numbers, otherwise concatenates them as strings.
+\item[--] Subtraction, multiplication, division, and modulo perform numeric operations after converting operands to long.
+\item[--] Division and modulo by zero throw an \texttt{InterpreterException}.
+\end{itemize}
+
+\subsubsection{Function Calls}
+
+When a \texttt{FunctionCall} node is encountered, all arguments are first evaluated to \texttt{Value} objects.
+An \texttt{ExecutionContext} is constructed containing references to the interpreter, environment, Minecraft context (if available), the list of emitted actions, the list of logs, and the evaluated arguments.
+The function is then looked up in the \texttt{FunctionRegistry} and invoked with the context.
+Function Call Execution (Pseudocode):
+
+\begin{lstlisting}
+if (expression instanceof ASTNode.FunctionCall functionCall) {
+    List<Value> arguments = new ArrayList<>();
+    for (ASTNode argument : functionCall.arguments) {
+        arguments.add(evaluateExpression(argument, ...));
+    }
+    ExecutionContext context = baseContext(..., arguments);
+    return functionRegistry.invoke(functionCall.name, context);
+}
+\end{lstlisting}
+
+\subsubsection{Special Object Access}
+
+Dot notation (e.g., \texttt{player.direction}) is handled by passing the object name and field name to the \texttt{SpecialObjectResolver}, which returns the corresponding value.
+This design allows the standard library to register special objects without modifying the interpreter core.
+
+\subsection{Condition Evaluation}
+
+Conditions are parsed into dedicated AST nodes and evaluated by the \texttt{evaluateCondition()} method, which distinguishes several cases:
+
+\begin{itemize}
+\item[\textbf{--}] \textbf{Comparison Conditions:} Both operands are evaluated as expressions, then compared using the specified operator. The result is wrapped in a \texttt{Value}.
+\item[\textbf{--}] \textbf{Boolean Conditions:} A bare expression (e.g., an identifier or function call) is evaluated, and its truthiness is returned.
+\item[\textbf{--}] \textbf{Negation:} A \texttt{not} keyword causes the operand condition to be recursively evaluated and negated.
+\item[\textbf{--}] \textbf{Logical Operators:} \texttt{and} and \texttt{or} operators employ short-circuit evaluation---\texttt{and} returns false as soon as the left operand is false, and \texttt{or} returns true as soon as the left operand is true.
+\end{itemize}
+
+\subsection{Function Registry and Function Binding}
+
+The \texttt{FunctionRegistry} maintains a map of function names (normalized to strings) to \texttt{InterpreterFunction} instances.
+Functions are registered by name during interpreter construction, typically via the \texttt{StandardLibrary} class, which installs all built-in functions.
+
+An \texttt{InterpreterFunction} is a functional interface with a single method \texttt{invoke(ExecutionContext context)} that returns a \texttt{Value}. This design permits functions to:
+\begin{itemize}
+\item[--] Inspect and modify the environment.
+\item[--] Query the current Minecraft state via \texttt{minecraftContext}.
+\item[--] Emit \texttt{Action} objects to be executed in sequence.
+\item[--] Log messages.
+\item[--] Access their arguments via the \texttt{ExecutionContext}.
+\end{itemize}
+
+The standard library includes functions for basic I/O (e.g., \texttt{log}, \texttt{print}), player movement (e.g., \texttt{move\_forward}), inventory management (e.g., \texttt{open\_inventory}), and timing (e.g., \texttt{wait}).
+
+\subsection{Error Handling}
+
+All runtime errors are reported via \texttt{InterpreterException}, an unchecked exception that carries a descriptive message.
+Type conversion errors, undefined variables, division by zero, and unknown functions all throw this exception with appropriate context.
+This approach ensures that parse-time errors are distinct from runtime errors, aiding debugging.
+
+\subsection{Integration with Minecraft}
+
+The interpreter is decoupled from Minecraft specifics by design.
+When no \texttt{MinecraftContext} is provided, the interpreter can still evaluate expressions and execute control flow; it simply cannot emit actions that require game state.
+The standard library's action-emitting functions (such as \texttt{move\_forward}) access the Minecraft context only when needed, allowing the interpreter to remain testable in isolation.
