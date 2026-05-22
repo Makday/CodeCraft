@@ -21,7 +21,7 @@ Crucially, the Minecraft integration layer was developed to bridge the gap betwe
 This integration employs a queue-based action execution model where each action maintains state across multiple ticks, enabling complex multi-tick operations such as player movement while preventing input conflicts and maintaining responsiveness.
 
 Several design decisions yielded a robust and extensible architecture.
-The \texttt{Action} interface and \texttt{ActionRunner} permit new operations to be added without modifying core interpreter logic.
+The \texttt{Action} interface and \texttt{ActionRunner} permit new operations to be added without modifying core interpreter logic. \\
 The \texttt{InputOverride} mechanism cleanly separates DSL-controlled input from player input, allowing long-running actions to coexist with single-tick operations and emergency stop commands.
 The interpreter's decoupling from Minecraft-specific code enables comprehensive unit testing and offline debugging before deployment.
 
