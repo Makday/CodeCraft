@@ -477,12 +477,6 @@ All runtime errors are reported via \texttt{InterpreterException}, an unchecked 
 Type conversion errors, undefined variables, division by zero, and unknown functions all throw this exception with appropriate context.
 This approach ensures that parse-time errors are distinct from runtime errors, aiding debugging.
 
-\subsection{Integration with Minecraft}
-
-The interpreter is decoupled from Minecraft specifics by design.
-When no \texttt{MinecraftContext} is provided, the interpreter can still evaluate expressions and execute control flow; it simply cannot emit actions that require game state.
-The standard library's action-emitting functions (such as \texttt{move\_forward}) access the Minecraft context only when needed, allowing the interpreter to remain testable in isolation.
-
 \section{Minecraft Integration and Action Execution}
 
 The CodeCraft DSL is executed within a Minecraft client environment where game logic proceeds at a fixed rate of 20 game ticks per second (50 milliseconds per tick).
