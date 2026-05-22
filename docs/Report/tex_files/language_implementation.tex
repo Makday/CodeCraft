@@ -402,7 +402,7 @@ Only one branch is ever executed.
 
 When a \texttt{stop} statement is encountered, the interpreter throws an internal \texttt{StopSignal} exception.
 This signal propagates up through nested loops and blocks, causing immediate termination.
-The top-level \texttt{execute()}} method catches this signal and sets the stopped flag in the returned result.
+The top-level \texttt{execute()} method catches this signal and sets the stopped flag in the returned result.
 
 \subsection{Expression Evaluation}
 
@@ -482,3 +482,168 @@ This approach ensures that parse-time errors are distinct from runtime errors, a
 The interpreter is decoupled from Minecraft specifics by design.
 When no \texttt{MinecraftContext} is provided, the interpreter can still evaluate expressions and execute control flow; it simply cannot emit actions that require game state.
 The standard library's action-emitting functions (such as \texttt{move\_forward}) access the Minecraft context only when needed, allowing the interpreter to remain testable in isolation.
+
+\section{Minecraft Integration and Action Execution}
+
+The CodeCraft DSL is executed within a Minecraft client environment where game logic proceeds at a fixed rate of 20 game ticks per second (50 milliseconds per tick).
+The DSL interpreter generates a sequence of discrete \texttt{Action} objects that must be executed within this real-time game loop.
+Many user-facing operations---such as player movement, item manipulation, and inventory navigation---require multiple ticks to complete, necessitating a sophisticated action execution framework that bridges the gap between imperative DSL semantics and Minecraft's tick-driven engine.
+
+\subsection{Tick-based Action Execution Model}
+
+The action execution system is built around a queue-based architecture that processes actions one at a time, with each action given an opportunity to update its state on every game tick.
+
+The core component is the \texttt{ActionRunner}, which is registered to receive callbacks from Minecraft's client tick events.
+On each tick, the \texttt{ActionRunner} maintains a queue of pending \texttt{Action} objects and a reference to the currently active action (if any).
+The tick method follows this pattern:
+
+\begin{lstlisting}[language=Java]
+public void tick() {
+    if (current == null) {
+        current = queue.poll();
+        if (current == null) return;
+    }
+
+    switch (current.tick(ctx)) {
+        case DONE    -> current = null;
+        case RUNNING -> {}
+    }
+}
+\end{lstlisting}
+
+Each \texttt{Action} implements a \texttt{tick(MinecraftContext ctx)} method that returns an \texttt{ActionStatus}: either \texttt{RUNNING} (indicating that the action is incomplete and will continue on the next tick) or \texttt{DONE} (indicating that the action has completed and the next queued action should begin).
+
+\subsection{Multi-tick Actions and Stateful Execution}
+
+Many operations require coordination across multiple game ticks.
+For example, moving the player forward by a specified distance requires sustained input over many frames, whereas waiting for a fixed duration requires tracking elapsed time across ticks.
+
+\subsubsection{Waiting and Delay Actions}
+
+The \texttt{WaitTicksAction} is one of the simplest multi-tick actions: it simply counts elapsed ticks until the specified duration is reached.
+On each tick, it increments an elapsed counter and returns \texttt{RUNNING} until the counter reaches the target.
+This enables DSL constructs such as \texttt{wait(60)} to insert precise delays between other actions:
+
+\begin{lstlisting}[language=Java]
+public class WaitTicksAction implements Action {
+    private final int ticks;
+    private int elapsed = 0;
+
+    @Override
+    public ActionStatus tick(MinecraftContext ctx) {
+        return ++elapsed >= ticks ? ActionStatus.DONE : ActionStatus.RUNNING;
+    }
+}
+\end{lstlisting}
+
+Regarding player movement actions, the \texttt{MoveForwardAction} demonstrates the complexity of bridging user-level commands with real-time game physics.
+When a DSL program calls \texttt{move\_forward(5)} to move forward five blocks, the action must:
+\begin{itemize}
+\item[--] Compute a target position based on the player's current facing direction.
+\item[--] Check that the path from the player's current position to the target is walkable (accounting for terrain, obstacles, and step heights).
+\item[--] Maintain simulated input (by forcing the forward key via \texttt{InputOverride}) across multiple ticks, allowing Minecraft's physics engine to move the player naturally.
+\item[--] Monitor the player's actual position each tick to ensure progress is being made toward the target.
+\item[--] Detect and handle obstacles or stuck conditions, terminating early if the player cannot progress.
+\item[--] Release the forced input once the player has arrived at the target, returning \texttt{DONE}.
+\end{itemize}
+
+A simplified view of the state machine is:
+
+\begin{lstlisting}[language=Java]
+public ActionStatus tick(MinecraftContext ctx) {
+    if (!initialized) {
+        initialized = true;
+        initializeTarget(ctx);
+        if (!isPathClear(...)) return ActionStatus.DONE;  // Can't proceed
+        InputOverride.INSTANCE.force(InputOverride.Key.FORWARD);
+        forcedForward = true;
+    }
+
+    double distanceSq = distance(player, target);
+
+    if (distanceSq <= ARRIVAL_DISTANCE_SQ) {
+        InputOverride.INSTANCE.release(InputOverride.Key.FORWARD);
+        return ActionStatus.DONE;
+    }
+
+    if (detectStuck(...)) {
+        return ActionStatus.DONE;  // Fail-safe
+    }
+
+    return ActionStatus.RUNNING;
+}
+\end{lstlisting}
+
+Crucially, the action does not directly move the player; instead, it manipulates Minecraft's input system (via \texttt{InputOverride}) and allows the game engine to apply physics and collisions naturally.
+This ensures that movement respects the game's terrain, gravity, and collision detection without reimplementing Minecraft's movement logic.
+
+\subsection{Input Override and Single-Tick Actions}
+
+Many DSL operations can be completed in a single tick, such as selecting a hotbar slot, opening the inventory, or turning to face a cardinal direction.
+However, these single-tick actions must not conflict with persistent input states from long-running actions like movement.
+
+The \texttt{InputOverride} class manages a set of forced input keys (forward, backward, left, right, jump, sneak) using an \texttt{EnumSet}.
+When an action forces a key (e.g., \texttt{InputOverride.INSTANCE.force(InputOverride.Key.FORWARD)}), a mixin in the client input system checks this set before processing the player's actual keyboard input.
+If a key is forced, the forced state takes precedence; otherwise, the player's actual input is used.
+
+This design ensures that:
+\begin{itemize}
+\item[--] Long-running actions like movement can maintain continuous input across ticks without requiring the player to hold down keys.
+\item[--] Single-tick actions (and the main game loop) can detect which keys are forced and respect them, avoiding conflicts.
+\item[--] When an action completes, it can release its forced keys, restoring normal player control or allowing the next action to force different keys.
+\end{itemize}
+
+\subsection{Action Sequencing and Execution Flow}
+
+The DSL interpreter produces an ordered sequence of \texttt{Action} objects, which are passed to the \texttt{ActionRunner} via an \texttt{ActionSequence}.
+The \texttt{ActionSequence} is a builder-like container that holds an immutable list of actions:
+
+\begin{lstlisting}[language=Java]
+ActionSequence sequence = ActionSequence.start(action1)
+    .then(action2)
+    .then(action3);
+runner.run(sequence);
+\end{lstlisting}
+
+When \texttt{runner.run(sequence)} is called, the \texttt{ActionRunner} replaces any existing queue and action with the new sequence's actions.
+On each subsequent game tick, the runner calls the current action's \texttt{tick()} method.
+When an action returns \texttt{DONE}, the runner polls the next action from the queue.
+If the queue becomes empty, the runner remains idle until a new sequence is submitted.
+
+This design ensures:
+\begin{itemize}
+\item[--] Actions are executed strictly sequentially, with each action completing before the next begins.
+\item[--] Multi-tick actions automatically serialize with following actions; a movement command that takes 50 ticks will not overlap with subsequent inventory operations.
+\item[--] The main game loop is never blocked; actions yield control every tick, allowing other game systems (rendering, entity updates, multiplayer synchronization) to proceed normally.
+\end{itemize}
+
+\subsection{Cleanup and Error Recovery}
+
+The \texttt{stop} command and exception handling ensure that interrupted action sequences clean up their state properly.
+When an exception occurs during interpretation or action execution, or when the player manually stops execution:
+
+\begin{itemize}
+\item[--] The \texttt{ActionRunner} is canceled, clearing the current action and queue.
+\item[--] All forced input keys are released via \texttt{InputOverride.INSTANCE.releaseAll()}, restoring normal player control.
+\item[--] The default keyboard input handler is restored via \texttt{MinecraftContext.restoreDefaultInput()}, undoing any input overrides and ensuring player-controlled movement is possible.
+\item[--] Any open inventory screens are left in their current state (to avoid abrupt UI changes that might confuse players), but subsequent player input is once again processed normally.
+\end{itemize}
+
+This recovery mechanism ensures that even in edge cases, the player regains full control of the game and the Minecraft client remains stable.
+
+\subsection{Design Rationale}
+
+The tick-based action model was chosen because it aligns naturally with Minecraft's game loop and provides several benefits:
+
+\begin{itemize}
+\item[--] It provides Real-Time Interaction as the player can continue to observe and interact with the world while DSL actions execute, making the system feel responsive rather than blocking.
+
+\item[--] The model is robust by relying on Minecraft's built-in input and physics systems rather than attempting to reimplement them, the system is robust to game updates, mod interactions, and edge cases in terrain or entity behavior.
+
+\item[--] There is an established simplicity since each action class is stateful and self-contained, making it easy to reason about and test in isolation. Complex multi-tick behavior emerges from simple single-tick state machines.
+
+\item[--] The system is extensible, since new actions can be added by implementing the \texttt{Action} interface and registering them in the standard library, without modifying the core runner or tick loop.
+
+\item[--] There is also an aspect of observability, as players can enable debug logging to watch each action transition from \texttt{RUNNING} to \texttt{DONE}, aiding in learning and troubleshooting.
+\end{itemize}
+
