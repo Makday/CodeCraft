@@ -35,7 +35,7 @@ The parser maintains a cursor over the token list and exposes three core navigat
 
 \subsection{Statement Parsing and Disambiguation}
 
-The top-level entry point, \texttt{parseProgram()}, skips any leading newlines and delegates to \texttt{parseStatementList()}, which iterates until an \texttt{EOF} or, when parsing inside a block, a \texttt{DEDENT} token is encountered.
+The top-level entry point, \texttt{parseProgram()}, skips any leading newlines and delegates to \\ \texttt{parseStatementList()}, which iterates until an \texttt{EOF} or, when parsing inside a block, a \texttt{DEDENT} token is encountered.
 
 Individual statements are dispatched in \texttt{parseStatement()} based on the type of the current token. Control flow keywords (\texttt{for}, \texttt{while}, \texttt{if}) are routed directly to their respective parsing methods. When the current token is an identifier, a one-token lookahead is used to disambiguate between an assignment, where the next token is \texttt{=}, and a function call statement, where the next token is \texttt{(}. Any identifier-headed expression that resolves to something other than a function call is rejected with a parse error, enforcing the grammar's restriction that bare expressions are not valid statements.
 
@@ -334,7 +334,7 @@ The primary method, \texttt{execute(ASTNode.Program program)}, accepts a parsed 
 \subsection{Environment and Value Management}
 
 The \texttt{Environment} class manages variable storage using a stack of scopes.
-Each scope is a \texttt{LinkedHashMap<String, Value>} mapping variable names to their runtime values.
+Each scope is a \\ \texttt{LinkedHashMap<String, Value>} mapping variable names to their runtime values.
 Although the current language uses only global scope, the stack structure permits future extensions for nested scopes (e.g., function-local variables) without API changes.
 
 Variable assignment is handled by the \texttt{assign(name, value)} method, which searches the scope stack from the topmost scope downward; if the variable already exists in any scope, its value is updated in place.
@@ -457,10 +457,10 @@ Conditions are parsed into dedicated AST nodes and evaluated by the \texttt{eval
 
 \subsection{Function Registry and Function Binding}
 
-The \texttt{FunctionRegistry} maintains a map of function names (normalized to strings) to \texttt{InterpreterFunction} instances.
+The \texttt{FunctionRegistry} maintains a map of function names (normalized to strings) to \\ \texttt{InterpreterFunction} instances.
 Functions are registered by name during interpreter construction, typically via the \texttt{StandardLibrary} class, which installs all built-in functions.
 
-An \texttt{InterpreterFunction} is a functional interface with a single method \texttt{invoke(ExecutionContext context)} that returns a \texttt{Value}. This design permits functions to:
+An \texttt{InterpreterFunction} is a functional interface with a single method \\ \texttt{invoke(ExecutionContext context)} that returns a \texttt{Value}. This design permits functions to:
 \begin{itemize}
 \item[--] Inspect and modify the environment.
 \item[--] Query the current Minecraft state via \texttt{minecraftContext}.
@@ -577,7 +577,7 @@ Many DSL operations can be completed in a single tick, such as selecting a hotba
 However, these single-tick actions must not conflict with persistent input states from long-running actions like movement.
 
 The \texttt{InputOverride} class manages a set of forced input keys (forward, backward, left, right, jump, sneak) using an \texttt{EnumSet}.
-When an action forces a key (e.g., \texttt{InputOverride.INSTANCE.force(InputOverride.Key.FORWARD)}), a mixin in the client input system checks this set before processing the player's actual keyboard input.
+When an action forces a key \\ (e.g., \texttt{InputOverride.INSTANCE.force(InputOverride.Key.FORWARD)}), a mixin in the client input system checks this set before processing the player's actual keyboard input.
 If a key is forced, the forced state takes precedence; otherwise, the player's actual input is used.
 
 This design ensures that:
