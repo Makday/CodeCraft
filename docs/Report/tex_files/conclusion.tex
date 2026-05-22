@@ -1,8 +1,8 @@
 \addcontentsline{toc}{chapter}{Conclusions}
 \chapter*{Conclusions}
 
-This project set out to design and partially implement CodeCraft, a domain-specific language for teaching programming to children aged 10–15 through the Minecraft game environment. 
-The work completed across the two main chapters demonstrates that the goal is both technically feasible and educationally grounded.
+This project set out to design and implement CodeCraft, a domain-specific language for teaching programming to children aged 10–15 through the Minecraft game environment.
+The work completed demonstrates that the goal is both technically feasible and educationally grounded, with a full language implementation pipeline successfully realized.
 
 The domain analysis established a clear motivation for the project. 
 Existing tools either operate in abstract environments disconnected from children's interests, as is the case with Scratch, or impose technical barriers that are inappropriate for the target age group, as seen with ComputerCraft and raw Minecraft modding. 
@@ -12,12 +12,32 @@ Minecraft was identified as a particularly suitable host environment due to its 
 The language design chapter translated these findings into concrete technical decisions. 
 An imperative paradigm was selected for its low learning curve and alignment with sequential reasoning. 
 Python\-inspired syntax was adopted to minimize cognitive overhead, and snake\_case identifier conventions were chosen based on empirical evidence showing lower visual effort for novice readers. 
-The formal BNF grammar defines a coherent and complete language covering variables, two forms of iteration, conditionals, function calls, and comments. 
+The formal BNF grammar defines a coherent and complete language covering variables, two forms of iteration, conditionals, function calls, and comments.
+
+The language implementation chapter provided a comprehensive account of the complete toolchain, spanning lexer, parser, interpreter, and Minecraft integration.
 The lexer and parser implementations were described in sufficient detail to establish the correctness of the tokenization strategy, indentation handling, and recursive descent parsing approach.
+Beyond parsing, a full AST interpreter was implemented featuring environment management, statement and expression evaluation, control flow handling, and a dynamically extensible function registry.
+Crucially, the Minecraft integration layer was developed to bridge the gap between DSL semantics and Minecraft's real-time tick-driven game loop.
+This integration employs a queue-based action execution model where each action maintains state across multiple ticks, enabling complex multi-tick operations such as player movement while preventing input conflicts and maintaining responsiveness.
 
-Several limitations remain acknowledged. Installation still requires external assistance, the DSL is constrained to actions performable through the player character, and the current implementation covers lexing and parsing without yet including an interpreter or Minecraft integration layer. 
-These constitute natural directions for future work, specifically the development of an AST evaluator, a Minecraft plugin bridge, and a beginner-friendly editor with inline error feedback.
+Several design decisions yielded a robust and extensible architecture.
+The \texttt{Action} interface and \texttt{ActionRunner} permit new operations to be added without modifying core interpreter logic.
+The \texttt{InputOverride} mechanism cleanly separates DSL-controlled input from player input, allowing long-running actions to coexist with single-tick operations and emergency stop commands.
+The interpreter's decoupling from Minecraft-specific code enables comprehensive unit testing and offline debugging before deployment.
 
-Overall, CodeCraft demonstrates that a carefully scoped DSL can serve as a meaningful pedagogical bridge between block-based tools and general-purpose text languages, providing children with an entry point into real programming within a context they already value.
+Limitations remain acknowledged.
+Installation requires external assistance in setting up the Fabric modding environment.
+The DSL is constrained to actions performable through the player character; world generation, redstone automation, and entity manipulation beyond basic interaction are not supported.
+The current implementation prioritizes correctness and extensibility over comprehensive standard library coverage; many Minecraft interactions remain as natural extensions rather than built-in functions.
+Educational features such as an integrated debugger, inline error visualization, and interactive tutorials are not yet implemented.
 
-The full source code for the project, including the lexer, parser, and grammar specifications, is available at: \cite{codecraft_github}.
+Future work naturally extends from the current foundation.
+Development of a beginner-friendly editor with inline error feedback and AST visualization would significantly improve the learning experience.
+Expansion of the standard library to cover additional Minecraft interactions (farming, building, crafting) would broaden the language's applicability.
+Integration with classroom management systems and learning analytics would support formal adoption in educational settings.
+Performance optimization and Fabric version compatibility updates will be necessary to maintain compatibility with evolving Minecraft releases.
+
+Overall, CodeCraft successfully demonstrates that a carefully scoped DSL can serve as a meaningful pedagogical bridge between block-based tools and general-purpose text languages, providing children with an entry point into real programming within a context they already value.
+The complete implementation, from language design through Minecraft integration, shows that educational programming tools can be both educationally sound and technically sophisticated.
+
+The full source code for the project, including the lexer, parser, interpreter, Minecraft integration, and grammar specifications, is available at: \cite{codecraft_github}.
